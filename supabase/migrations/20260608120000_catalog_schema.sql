@@ -39,6 +39,7 @@ CREATE TABLE public.user_assignments (
 CREATE INDEX catalog_items_status_idx ON public.catalog_items (status);
 CREATE INDEX catalog_items_tags_idx ON public.catalog_items USING gin (tags);
 CREATE INDEX user_assignments_user_list_idx ON public.user_assignments (user_id, list_type);
+CREATE INDEX user_assignments_catalog_item_id_idx ON public.user_assignments (catalog_item_id);
 
 -- updated_at helper
 CREATE OR REPLACE FUNCTION public.set_updated_at()
@@ -102,9 +103,13 @@ AS $$
   );
 $$;
 
+REVOKE ALL ON FUNCTION public.is_admin() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
 
 -- Enable RLS (policies added in Phase 2)
+-- DEPLOY GATE: Do not apply this migration to a remote/production project until
+-- Phase 2 RLS policies ship in the same deploy. Until then, authenticated and
+-- anon roles are denied all table access (fail-closed; no row leakage).
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.catalog_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_assignments ENABLE ROW LEVEL SECURITY;

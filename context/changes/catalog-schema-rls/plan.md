@@ -231,6 +231,7 @@ MVP data volume is small (PRD target_scale). `catalog_items(status)` and GIN on 
 ## Migration Notes
 
 - **Local**: `npx supabase db reset` after adding migration files.
+- **Deploy gate (Phase 1)**: Do not push this migration to production until Phase 2 RLS policies ship in the same deploy. RLS is enabled with no policies — fail-closed (no leakage, but all table access denied for `anon`/`authenticated` until policies exist).
 - **Production**: Apply via `supabase db push` or linked project migration deploy — human approval required per `infrastructure.md`. Worker deploy does not roll back DB changes.
 - **Admin bootstrap**: First admin is set manually (`UPDATE profiles SET role = 'admin' WHERE id = ...`). Document the UUID lookup (`SELECT id, email FROM auth.users`) in S-01; not automated here.
 - **Existing auth users**: If any exist before migration, run a one-time backfill `INSERT INTO profiles (id) SELECT id FROM auth.users ON CONFLICT DO NOTHING` in the migration.

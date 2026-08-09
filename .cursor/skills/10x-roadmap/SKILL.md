@@ -31,8 +31,8 @@ The skill is **AI-native** in four concrete ways: (1) it expresses ordering as a
 
 - `/10x-shape` and `/10x-prd` — produce the upstream PRD this skill consumes. If `shape-notes.md` carries a `## Forward: technical-roadmap` block (where shape parks roadmap-bound content), this skill lifts it.
 - `10x-tech-stack-selector` — runs between `/10x-prd` and this skill in the bootstrap chain. If `context/foundation/tech-stack.md` exists, this skill reads it as input to derive `## Foundations` (auth scaffold, deploy skeleton, observability — anything the tech-stack-selection step implied) and to short-circuit baseline probes for layers already declared.
-- `/10x-plan` — downstream consumer. The user picks a roadmap item and invokes `/10x-plan <change-id>`; that skill creates the change folder and produces a detailed plan. The roadmap does NOT pre-create change folders; one slice can spawn multiple changes when `/10x-plan` discovers that the item is still too broad.
-- `/10x-implement` — further downstream. The intermediate lifecycle states (`status: planning`, `in-progress`) are defined here but **not yet wired** in `/10x-plan` and `/10x-implement`; today this skill writes only `proposed` / `ready` / `blocked`. Future work will wire the intermediate states.
+- `/10x-plan` — downstream consumer. The user picks a roadmap item and invokes `/10x-plan <change-id>`; that skill creates the change folder, produces a detailed plan, and flips the matched roadmap item's `Status` to `planning`. The roadmap does NOT pre-create change folders; one slice can spawn multiple changes when `/10x-plan` discovers that the item is still too broad (only the first advances the shared item's status).
+- `/10x-implement` (and its autonomous sibling `/10x-goal-implement`) — further downstream. When implementation *starts* on a change whose `Change ID` matches a roadmap item, it flips that item's `Status` to `in-progress` — the open-work counterpart to `/10x-archive`'s `done` flip. This skill itself still emits only `proposed` / `ready` / `blocked` on generation; the intermediate lifecycle states (`planning`, `in-progress`) are now written downstream as the change moves through plan → implement. Every downstream flip matches by `Change ID`, is best-effort (a no-match is a silent skip), and is forward-only (never regresses a more-advanced status).
 - `/10x-archive` — closes the loop at the end. When a change whose `Change ID` matches a roadmap item is archived, `/10x-archive` flips that item's `Status` to `done` (in `## At a glance` and in the item's body block) and appends an entry to `## Done`. This skill never pre-populates `## Done`; `/10x-archive` is its sole writer.
 - `/10x-frame`, `/10x-research` — orthogonal. They operate on a single change, not the roadmap.
 
@@ -62,7 +62,7 @@ The interactive-question tool is used in Steps 1, 3, 4, 5, and 9 (input-missing,
 
 Whenever the procedure says to use subagents or run parallel probes, use whichever background research / task-spawn tool the host exposes. Known equivalents (non-exhaustive):
 
-- your AI coding assistant → Spawning an Explore/general-purpose subagent
+- your AI coding assistant → spawn an Explore/general-purpose subagent
 - Cursor → background agents / delegated tasks
 - OpenAI Codex → task delegation tools where available
 - Other harnesses → look for any tool that spawns an isolated agent with its own context window and returns a summary.
@@ -78,7 +78,12 @@ Resolve the input path:
 - If an argument was passed, use it verbatim (strip a leading `@` if present).
 - Otherwise default to `context/foundation/prd.md`.
 
-If the file exists, **read it FULLY** (no `limit`/`offset`).
+Execute a shell command to check if the file exists:
+```bash
+test -f "<resolved-path>"
+```
+
+If the file exists, **read its content FULLY**.
 
 If it does not exist, Ask the user:
 - question: "No PRD found at `<resolved-path>`. How would you like to proceed?"
@@ -258,7 +263,7 @@ Rules for the options block:
 
 **5d. Derive investment areas (no question).**
 
-After the 2-3 anchor answers land, derive investment areas from: (1) the chosen `main_goal`, (2) PRD NFRs gating launch in a layer, (3) baseline gaps mapped to must-have FRs, (4) Open-Question concentration. Announce the derived investment in the synthesis recap (5e). The user can override in one line; they are not asked to pick.
+After the 2-3 anchor answers land, derive investment areas from: (1) the chosen `main_goal`, (2) PRD NFRs that gate launch in a layer, (3) baseline gaps mapped to must-have FRs, (4) Open-Question concentration. Announce the derived investment in the synthesis recap (5e). The user can override in one line; they are not asked to pick.
 
 **5e. Synthesis recap — confirm without asking.**
 
@@ -553,7 +558,7 @@ This table is the clean handoff to Jira/Linear or any MCP-backed backlog. Includ
 - **Blockers** is *external pending* only (vendor, design, stakeholder decision). Things the team can't unilaterally resolve. If the team CAN resolve it, it's an Unknown, not a Blocker.
 - **Unknowns** is questions to research. Each carries Owner and Block flag. Block=yes promotes the slice's Status to `blocked`.
 - **Risk** is one line: why sequenced here, what could go wrong, why this is the safer order than alternatives. Not a postmortem. Not catastrophizing. Just the load-bearing reason a future reader needs to understand the sequence.
-- **Status** lifecycle: `proposed` (default on first generation) | `ready` (Prerequisites all met, no blocking unknowns — `/10x-plan` can run) | `planning` | `in-progress` | `done` | `blocked` (one or more unknowns with `Block: yes`). Today this skill emits only `proposed`, `ready`, and `blocked`; `/10x-archive` flips an item to `done` when its change archives. `planning` and `in-progress` are reserved for future `/10x-plan` / `/10x-implement` wiring.
+- **Status** lifecycle: `proposed` (default on first generation) | `ready` (Prerequisites all met, no blocking unknowns — `/10x-plan` can run) | `planning` | `in-progress` | `done` | `blocked` (one or more unknowns with `Block: yes`). This skill emits only `proposed`, `ready`, and `blocked` on generation. The rest are written downstream as the change advances, each matched by `Change ID`: `/10x-plan` → `planning`, `/10x-implement` (and `/10x-goal-implement`) → `in-progress`, `/10x-archive` → `done`. Downstream flips are best-effort and forward-only (an item is never regressed to an earlier state).
 - **Frontmatter `main_goal` / `top_blocker`** record Step 5 answers so a future re-read (or a reviewer) can see the sequencing bias at a glance without opening the conversation history.
 
 **Hard rule — never invent slices.** Every slice must trace to a PRD US-NN or FR-NNN. If the interview surfaced something that isn't in the PRD ("oh and we also need offline mode"), it does NOT become a slice. It becomes either an Open Roadmap Question (if it's a real gap) or a Parked entry (if the user explicitly chose to defer it). The roadmap's job is to sequence what the PRD declares, not to grow the PRD.
@@ -600,7 +605,12 @@ Then STOP.
 
 ### Step 9: Collision check
 
-If the file does not exist, write to `context/foundation/roadmap.md` and proceed to Step 10.
+Execute a shell command to check if the file exists:
+```bash
+test -f context/foundation/roadmap.md
+```
+
+If the file does not exist, write the content to `context/foundation/roadmap.md` and proceed to Step 10.
 
 If the file exists, the foundation-doc convention is **edit-in-place** for incremental refinement, **archive-then-replace** for full regeneration. This skill produces a *full* roadmap from PRD; surgical refinement is out of scope. So default to archive-then-replace, but Ask the user:
 - question: "context/foundation/roadmap.md already exists. How would you like to proceed?"
@@ -715,7 +725,7 @@ STOP. Do not chain into another skill automatically — the user picks when to p
 
 12. **Never chain automatically.** Step 10 is an announcement, not an invocation. The user picks when (and which) slice to feed to `/10x-plan`. Auto-chaining would skip the human's review of the generated roadmap.
 
-13. **Define strategic terms inline on first use.** Product-strategy vocabulary — `wedge`, `beachhead`, `north star`, `validation milestone`, `primary metric`, `must-have path`, `product-market fit`, `thin end of the wedge`, `riskiest assumption`, `core hypothesis` — is skill-internal and PRD-internal shorthand, not common knowledge. The roadmap must be readable cold by a teammate (or future-you) who has not taken a product-strategy course. On the FIRST occurrence of any such term in the document body, attach a one-sentence definition inline (parenthetical, em-dash gloss, or short follow-on sentence). Do not repeat the definition on later uses. If the term cannot be defined in one sentence, replace it with plain language and re-emit. This guardrail applies to user-facing prose in the emitted document — not to the interview questions (Step 5 already handles those) and not to the field semantics inside this skill file. Step 8's self-review check #16 enforces this; bypass is a self-review failure, not a stylistic preference.
+13. **Define strategic terms inline on first use.** Product-strategy vocabulary — `wedge`, `beachhead`, `north star`, `validation milestone`, `primary metric`, `must-have path`, `product-market fit`, `thin end of the wedge`, `riskiest assumption`, `core hypothesis` — is skill-internal and PRD-internal shorthand, not common knowledge. The roadmap must be readable cold by a teammate (or future-you) who has not taken a product-strategy course. On the FIRST occurrence of any such term in the document body, attach a one-sentence definition inline (parenthetical, em-dash gloss, or short follow-on sentence). Do not repeat the definition on later uses. If the concept cannot be defined in one sentence, replace it with plain language ("the smallest end-to-end flow that proves the product works" beats "the wedge" if you can't compress the wedge's distinguishing trait into one clause). This guardrail applies to user-facing prose in the emitted document — not to the interview questions (Step 5 already handles those) and not to the field semantics inside this skill file. Step 8's self-review check #16 enforces this; bypass is a self-review failure, not a stylistic preference.
 
 14. **Lean interview with strong Recommends — not silent auto-framing, not unbounded discovery.** Step 5 asks **at most 3 anchor questions** (`main_goal`, `north_star`, `top_blocker`); investment areas are *derived* from the answers. Each anchor question carries one strong **Recommend** grounded in a quoted artifact line, plus 1-2 alternatives where each alternative has its own one-line "why this is also reasonable" rationale tied to artifact signal. Strawman alternatives (an option listed only to make the Recommend look right) are forbidden — if the artifacts support only one value, present the anchor with a single Recommend and a free-form override, and say so. An anchor may be **skipped only when the PRD or Success Criteria literally states the value** (e.g., `timeline_budget: "1 week"` plus "must launch before X" → `main_goal: speed` is unambiguous); never skip when any plausible alternative exists. The two failure modes to avoid: **(a) performative interrogation** — asking what the artifacts already answer, or asking more than 3 questions; **(b) false confidence** — silently deciding load-bearing framing without offering the user a real choice. The custom-MVP-shape exception (Step 5f) is the only path that allows follow-ups (up to 2, on top of the 3 anchors). Step 10's recommended-next-move is the same principle applied to the hand-off: one recommendation with a one-line reason, not a "ready to plan" list the user has to triage.
 
@@ -726,4 +736,4 @@ STOP. Do not chain into another skill automatically — the user picks when to p
 - The baseline probe (Step 4) replaces what used to be a "what's already in place?" question. Subagents are cheaper than the user's attention, and the codebase is more reliable than memory.
 - The `## Done` section is empty on first generation. It exists so `/10x-archive` has a stable place to record closed items — when a change whose `Change ID` matches a roadmap item is archived, `/10x-archive` flips that item to `Status: done` and appends a `## Done` entry. Do NOT pre-populate it.
 - When the skill regenerates an existing roadmap, the previous file moves to `foundation/archive/<today>-roadmap.md`. Reading the diff between the archived version and the new one is the cleanest way to see what changed in the project's understanding — that's the affordance the foundation-doc convention is designed for.
-- Lifecycle status fields `planning` and `in-progress` are reserved — today this skill emits only `proposed` / `ready` / `blocked`, and `/10x-archive` flips an item to `done` on archive. Wiring `/10x-plan` and `/10x-implement` to flip `planning` / `in-progress` is future work.
+- Lifecycle status flow: this skill emits `proposed` / `ready` / `blocked` on generation; downstream skills advance a matched item by `Change ID` — `/10x-plan` → `planning`, `/10x-implement` / `/10x-goal-implement` → `in-progress`, `/10x-archive` → `done`. Each downstream flip is best-effort (a roadmap is optional; a no-match is a silent skip) and forward-only (never regresses a more-advanced status).

@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+.wrangler
+.git
+.cursor
+context
+*.log
+.env
+.env.*

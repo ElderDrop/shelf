@@ -1,0 +1,22 @@
+{
+  "name": "Node.js (latest)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": false
+    }
+  },
+  "runArgs": ["--init", "--privileged"],
+  "remoteUser": "node",
+  "updateRemoteUserUID": true,
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    }
+  },
+  "postCreateCommand": "node --version && npm --version && npx --version && gh --version && docker --version"
+}

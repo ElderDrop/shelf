@@ -12,6 +12,10 @@ export default defineConfig({
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      host: "0.0.0.0",
+      allowedHosts: true,
+    },
   },
   adapter: cloudflare(),
   env: {

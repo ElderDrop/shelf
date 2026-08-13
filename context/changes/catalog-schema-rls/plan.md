@@ -265,16 +265,16 @@ MVP data volume is small (PRD target_scale). `catalog_items(status)` and GIN on 
 
 #### Automated
 
-- [ ] 2.1 `npx supabase db reset` applies policies cleanly
-- [ ] 2.2 `npm run lint` passes
-- [ ] 2.3 `npm run build` passes
+- [x] 2.1 `npx supabase db reset` applies policies cleanly
+- [x] 2.2 `npm run lint` passes
+- [x] 2.3 `npm run build` passes
 
 #### Manual
 
-- [ ] 2.4 User session sees only approved catalog items
-- [ ] 2.5 Admin session sees and manages all catalog statuses
-- [ ] 2.6 Assignment isolation and approved-only insert guard verified
-- [ ] 2.7 Unauthenticated access returns no domain rows
+- [x] 2.4 User session sees only approved catalog items
+- [x] 2.5 Admin session sees and manages all catalog statuses
+- [x] 2.6 Assignment isolation and approved-only insert guard verified
+- [x] 2.7 Unauthenticated access returns no domain rows
 
 ### Phase 3: TypeScript Types and Documentation
 

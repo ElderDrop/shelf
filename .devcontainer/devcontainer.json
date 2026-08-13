@@ -4,13 +4,15 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
-      "version": "latest",
-      "moby": false
+  "runArgs": ["--init", "--add-host=host.docker.internal:host-gateway"],
+  "appPort": ["4321:4321"],
+  "forwardPorts": [4321],
+  "portsAttributes": {
+    "4321": {
+      "label": "Astro dev",
+      "onAutoForward": "ignore"
     }
   },
-  "runArgs": ["--init", "--privileged"],
   "remoteUser": "node",
   "updateRemoteUserUID": true,
   "customizations": {
@@ -18,5 +20,5 @@
       "extensions": []
     }
   },
-  "postCreateCommand": "node --version && npm --version && npx --version && gh --version && docker --version"
+  "postCreateCommand": "node --version && npm --version && npx --version && gh --version"
 }

@@ -3,7 +3,7 @@ project: Shelf
 version: 1
 status: draft
 created: 2026-06-07
-updated: 2026-08-09
+updated: 2026-08-17
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -30,7 +30,7 @@ Kolekcjoner mediów fizycznych nie ma jednego miejsca łączącego posiadane poz
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 |---|---|---|---|---|---|
 | F-01 | catalog-schema-rls | (foundation) minimal catalog schema, assignment tables, admin role, and RLS policies landed | — | NFR (access), Access Control | in-progress |
-| S-01 | admin-catalog-approval | admin can manually create or edit catalog items and approve them so approved items appear in the user-facing catalog | F-01 | FR-001, FR-004, FR-006 | proposed |
+| S-01 | admin-catalog-approval | admin can manually create or edit catalog items and approve them so approved items appear in the user-facing catalog | F-01 | FR-001, FR-004, FR-006 | planning |
 | S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | proposed |
 | S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | blocked |
 | S-04 | tag-recommendations | receive item recommendations based on tags or description of items in their library | S-02 | FR-007 | proposed |
@@ -86,7 +86,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - How is the single admin account bootstrapped in production? — Owner: team. Block: no.
 - **Risk:** North star slice — without approved catalog items no user assignment is possible (cold start accepted in PRD); sequenced immediately after schema foundation to unblock the collector path.
-- **Status:** proposed
+- **Status:** planning
 
 ### S-02: Catalog search, assign, and library view
 

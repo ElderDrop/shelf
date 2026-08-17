@@ -257,33 +257,33 @@ MVP data volume is small (PRD target_scale). `catalog_items(status)` and GIN on 
 
 #### Manual
 
-- [ ] 1.4 `npx supabase db reset` completes without SQL errors
-- [ ] 1.5 Table definitions and signup profile trigger verified in psql
-- [ ] 1.6 New signup creates a `profiles` row automatically
+- [x] 1.4 `npx supabase db reset` completes without SQL errors
+- [x] 1.5 Table definitions and signup profile trigger verified in psql
+- [x] 1.6 New signup creates a `profiles` row automatically
 
 ### Phase 2: RLS Policies
 
 #### Automated
 
-- [x] 2.1 `npx supabase db reset` applies policies cleanly
-- [x] 2.2 `npm run lint` passes
-- [x] 2.3 `npm run build` passes
+- [x] 2.1 `npx supabase db reset` applies policies cleanly — b5b1fa9
+- [x] 2.2 `npm run lint` passes — b5b1fa9
+- [x] 2.3 `npm run build` passes — b5b1fa9
 
 #### Manual
 
-- [x] 2.4 User session sees only approved catalog items
-- [x] 2.5 Admin session sees and manages all catalog statuses
-- [x] 2.6 Assignment isolation and approved-only insert guard verified
-- [x] 2.7 Unauthenticated access returns no domain rows
+- [x] 2.4 User session sees only approved catalog items — b5b1fa9
+- [x] 2.5 Admin session sees and manages all catalog statuses — b5b1fa9
+- [x] 2.6 Assignment isolation and approved-only insert guard verified — b5b1fa9
+- [x] 2.7 Unauthenticated access returns no domain rows — b5b1fa9
 
 ### Phase 3: TypeScript Types and Documentation
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes with `src/types.ts`
-- [ ] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes with `src/types.ts`
+- [x] 3.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 3.3 Entity types align with migration columns
-- [ ] 3.4 README migration guidance updated
+- [x] 3.3 Entity types align with migration columns
+- [x] 3.4 README migration guidance updated

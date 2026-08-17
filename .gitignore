@@ -26,3 +26,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# supabase CLI local cache
+supabase/.temp/
+
+# local workflow notes (not part of product changes)
+context/skill-order.md

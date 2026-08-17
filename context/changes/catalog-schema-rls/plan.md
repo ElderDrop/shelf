@@ -280,10 +280,10 @@ MVP data volume is small (PRD target_scale). `catalog_items(status)` and GIN on 
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes with `src/types.ts`
-- [x] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes with `src/types.ts` — 10361ee
+- [x] 3.2 `npm run build` passes — 10361ee
 
 #### Manual
 
-- [x] 3.3 Entity types align with migration columns
-- [x] 3.4 README migration guidance updated
+- [x] 3.3 Entity types align with migration columns — 10361ee
+- [x] 3.4 README migration guidance updated — 10361ee

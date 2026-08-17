@@ -14,7 +14,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
     server: {
       host: "0.0.0.0",
-      allowedHosts: true,
+      allowedHosts: ["localhost", "127.0.0.1", "host.docker.internal"],
     },
   },
   adapter: cloudflare(),

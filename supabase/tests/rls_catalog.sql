@@ -1,6 +1,11 @@
 -- Repeatable RLS checks for catalog/profiles/assignments (F-01).
--- Run in Studio SQL editor or: npx supabase db query --local --file supabase/tests/rls_catalog.sql
--- Replace the UUID placeholders after signing up two users.
+-- Copy-paste blocks into Studio SQL editor (or psql) one section at a time.
+-- Do not run this file with `supabase db query --file` — every statement is
+-- a commented snippet so it cannot be executed as a batch.
+-- Replace UUID placeholders after signing up two users.
+--
+-- Impersonation uses request.jwt.claims JSON (what auth.uid() reads), not
+-- the legacy request.jwt.claim.sub GUC.
 
 -- Look up users:
 -- SELECT id, email FROM auth.users;
@@ -19,8 +24,12 @@
 -- Regular user: approved catalog only; no other users' assignments
 -- ---------------------------------------------------------------------------
 -- BEGIN;
--- SET LOCAL role authenticated;
--- SET LOCAL request.jwt.claim.sub = '<user-a-uuid>';
+-- SET LOCAL ROLE authenticated;
+-- SELECT set_config(
+--   'request.jwt.claims',
+--   json_build_object('sub', '<user-a-uuid>', 'role', 'authenticated')::text,
+--   true
+-- );
 -- SELECT id, title, status FROM public.catalog_items;           -- approved only
 -- SELECT * FROM public.user_assignments;                        -- own rows only
 -- INSERT INTO public.user_assignments (user_id, catalog_item_id, list_type)
@@ -41,8 +50,12 @@
 -- Admin: all catalog statuses; can insert/update/delete catalog items
 -- ---------------------------------------------------------------------------
 -- BEGIN;
--- SET LOCAL role authenticated;
--- SET LOCAL request.jwt.claim.sub = '<admin-uuid>';
+-- SET LOCAL ROLE authenticated;
+-- SELECT set_config(
+--   'request.jwt.claims',
+--   json_build_object('sub', '<admin-uuid>', 'role', 'authenticated')::text,
+--   true
+-- );
 -- SELECT id, title, status FROM public.catalog_items;           -- pending + approved + rejected
 -- INSERT INTO public.catalog_items (title, status) VALUES ('Admin Insert', 'pending');
 -- COMMIT;
@@ -51,16 +64,33 @@
 -- Cross-user leak: User B must not see User A's assignments
 -- ---------------------------------------------------------------------------
 -- BEGIN;
--- SET LOCAL role authenticated;
--- SET LOCAL request.jwt.claim.sub = '<user-b-uuid>';
+-- SET LOCAL ROLE authenticated;
+-- SELECT set_config(
+--   'request.jwt.claims',
+--   json_build_object('sub', '<user-b-uuid>', 'role', 'authenticated')::text,
+--   true
+-- );
 -- SELECT * FROM public.user_assignments;                        -- empty or B's rows only
+-- COMMIT;
+
+-- ---------------------------------------------------------------------------
+-- Role self-promotion must fail for a regular user
+-- ---------------------------------------------------------------------------
+-- BEGIN;
+-- SET LOCAL ROLE authenticated;
+-- SELECT set_config(
+--   'request.jwt.claims',
+--   json_build_object('sub', '<user-a-uuid>', 'role', 'authenticated')::text,
+--   true
+-- );
+-- UPDATE public.profiles SET role = 'admin' WHERE id = '<user-a-uuid>';  -- should fail
 -- COMMIT;
 
 -- ---------------------------------------------------------------------------
 -- Unauthenticated (anon): no domain rows
 -- ---------------------------------------------------------------------------
 -- BEGIN;
--- SET LOCAL role anon;
+-- SET LOCAL ROLE anon;
 -- SELECT * FROM public.profiles;
 -- SELECT * FROM public.catalog_items;
 -- SELECT * FROM public.user_assignments;

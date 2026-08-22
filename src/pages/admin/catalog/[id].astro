@@ -1,0 +1,60 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import CatalogForm from "@/components/admin/CatalogForm";
+import { createClient } from "@/lib/supabase";
+import { CatalogServiceError, getById } from "@/lib/services/catalog";
+import { catalogItemIdSchema } from "@/lib/schemas/catalog";
+import type { CatalogItem } from "@/types";
+
+const idParsed = catalogItemIdSchema.safeParse(Astro.params.id);
+let item: CatalogItem | null = null;
+let notFound = false;
+let configError = false;
+
+if (!idParsed.success) {
+  notFound = true;
+  Astro.response.status = 404;
+} else {
+  const supabase = createClient(Astro.request.headers, Astro.cookies);
+  if (!supabase) {
+    configError = true;
+    Astro.response.status = 500;
+  } else {
+    try {
+      item = await getById(supabase, idParsed.data);
+    } catch (error) {
+      if (error instanceof CatalogServiceError && error.code === "not_found") {
+        notFound = true;
+        Astro.response.status = 404;
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+---
+
+{
+  notFound ? (
+    <Layout title="Not found">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-8 text-zinc-100">
+        <h1 class="text-xl font-semibold">Catalog item not found</h1>
+        <a href="/admin/catalog" class="mt-4 inline-block text-sm text-violet-300 hover:underline">
+          Back to list
+        </a>
+      </main>
+    </Layout>
+  ) : configError ? (
+    <Layout title="Configuration error">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-8 text-zinc-100">
+        <h1 class="text-xl font-semibold">Supabase is not configured</h1>
+      </main>
+    </Layout>
+  ) : item ? (
+    <Layout title={`Edit: ${item.title}`}>
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 sm:p-8">
+        <CatalogForm client:load mode="edit" item={item} />
+      </main>
+    </Layout>
+  ) : null
+}

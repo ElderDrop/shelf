@@ -410,34 +410,34 @@ MVP catalog volume is small (PRD `target_scale.data_volume: small`). List endpoi
 
 #### Automated
 
-- [x] 2.1 `zod` is listed in `package.json` dependencies
-- [x] 2.2 `npm run lint` passes
-- [x] 2.3 `npm run build` passes
+- [x] 2.1 `zod` is listed in `package.json` dependencies — 3cae0e5
+- [x] 2.2 `npm run lint` passes — 3cae0e5
+- [x] 2.3 `npm run build` passes — 3cae0e5
 
 #### Manual
 
-- [x] 2.4 Admin POST creates a pending item
-- [x] 2.5 Admin PATCH can approve and edit fields
-- [x] 2.6 Admin GET list and `?status=` filter match expected rows
-- [x] 2.7 Non-admin admin-API calls return 403; RLS hides pending from the user session
-- [x] 2.8 Invalid bodies return 400 with `details[].field`
+- [x] 2.4 Admin POST creates a pending item — 3cae0e5
+- [x] 2.5 Admin PATCH can approve and edit fields — 3cae0e5
+- [x] 2.6 Admin GET list and `?status=` filter match expected rows — 3cae0e5
+- [x] 2.7 Non-admin admin-API calls return 403; RLS hides pending from the user session — 3cae0e5
+- [x] 2.8 Invalid bodies return 400 with `details[].field` — 3cae0e5
 
 ### Phase 3: Admin catalog UI
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 3.3 Admin can create an item from `/admin/catalog/new`
-- [ ] 3.4 Admin can edit title, description, and tags; values persist
-- [ ] 3.5 Approve from the list updates status; item remains editable
-- [ ] 3.6 Reject then re-approve works; status filters match
-- [ ] 3.7 Non-admin `/admin/catalog` returns 403
-- [ ] 3.8 No delete control in the UI
-- [ ] 3.9 Admin Topbar shows Admin; non-admin Topbar does not
+- [x] 3.3 Admin can create an item from `/admin/catalog/new`
+- [x] 3.4 Admin can edit title, description, and tags; values persist
+- [x] 3.5 Approve from the list updates status; item remains editable
+- [x] 3.6 Reject then re-approve works; status filters match
+- [x] 3.7 Non-admin `/admin/catalog` returns 403
+- [x] 3.8 No delete control in the UI
+- [x] 3.9 Admin Topbar shows Admin; non-admin Topbar does not
 
 ### Phase 4: User-facing approved catalog
 

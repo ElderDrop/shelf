@@ -1,0 +1,15 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import CatalogList from "@/components/admin/CatalogList";
+import { createClient } from "@/lib/supabase";
+import { listAll } from "@/lib/services/catalog";
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const items = supabase ? await listAll(supabase) : [];
+---
+
+<Layout title="Admin catalog">
+  <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 sm:p-8">
+    <CatalogList client:load initialItems={items} />
+  </main>
+</Layout>

@@ -391,36 +391,36 @@ MVP catalog volume is small (PRD `target_scale.data_volume: small`). List endpoi
 
 #### Automated
 
-- [x] 1.1 Migration file exists at `supabase/migrations/20260817120000_profiles_role_bypass_rls.sql`
-- [x] 1.2 `npm run lint` passes
-- [x] 1.3 `npm run build` passes
+- [x] 1.1 Migration file exists at `supabase/migrations/20260817120000_profiles_role_bypass_rls.sql` — a166171
+- [x] 1.2 `npm run lint` passes — a166171
+- [x] 1.3 `npm run build` passes — a166171
 
 #### Manual
 
-- [x] 1.4 `npx supabase db reset` applies the new migration without errors
-- [x] 1.5 Studio SQL as postgres can `UPDATE profiles SET role = 'admin'`
-- [x] 1.6 Authenticated self-update of `profiles.role` still fails
-- [x] 1.7 Signed-out `/catalog` and `/admin/catalog` redirect to sign-in
-- [x] 1.8 Signed-in non-admin `/admin/catalog` returns 403
-- [x] 1.9 Signed-out `fetch` `/api/admin/catalog` returns 401 JSON
-- [x] 1.10 Signed-in non-admin `fetch` `/api/admin/catalog` returns 403 JSON
-- [x] 1.11 Topbar appears once on Layout pages; Catalog and Admin links are absent
+- [x] 1.4 `npx supabase db reset` applies the new migration without errors — a166171
+- [x] 1.5 Studio SQL as postgres can `UPDATE profiles SET role = 'admin'` — a166171
+- [x] 1.6 Authenticated self-update of `profiles.role` still fails — a166171
+- [x] 1.7 Signed-out `/catalog` and `/admin/catalog` redirect to sign-in — a166171
+- [x] 1.8 Signed-in non-admin `/admin/catalog` returns 403 — a166171
+- [x] 1.9 Signed-out `fetch` `/api/admin/catalog` returns 401 JSON — a166171
+- [x] 1.10 Signed-in non-admin `fetch` `/api/admin/catalog` returns 403 JSON — a166171
+- [x] 1.11 Topbar appears once on Layout pages; Catalog and Admin links are absent — a166171
 
 ### Phase 2: Catalog service and admin JSON APIs
 
 #### Automated
 
-- [ ] 2.1 `zod` is listed in `package.json` dependencies
-- [ ] 2.2 `npm run lint` passes
-- [ ] 2.3 `npm run build` passes
+- [x] 2.1 `zod` is listed in `package.json` dependencies
+- [x] 2.2 `npm run lint` passes
+- [x] 2.3 `npm run build` passes
 
 #### Manual
 
-- [ ] 2.4 Admin POST creates a pending item
-- [ ] 2.5 Admin PATCH can approve and edit fields
-- [ ] 2.6 Admin GET list and `?status=` filter match expected rows
-- [ ] 2.7 Non-admin admin-API calls return 403; RLS hides pending from the user session
-- [ ] 2.8 Invalid bodies return 400 with `details[].field`
+- [x] 2.4 Admin POST creates a pending item
+- [x] 2.5 Admin PATCH can approve and edit fields
+- [x] 2.6 Admin GET list and `?status=` filter match expected rows
+- [x] 2.7 Non-admin admin-API calls return 403; RLS hides pending from the user session
+- [x] 2.8 Invalid bodies return 400 with `details[].field`
 
 ### Phase 3: Admin catalog UI
 

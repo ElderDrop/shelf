@@ -51,7 +51,11 @@ Queries and mutations always use `createClient` from `src/lib/supabase.ts` (user
 
 **Admin promote is blocked today.** `prevent_profile_role_change` fires for every role, including Studio `postgres`. Phase 1 must skip the raise when `current_user` has `rolbypassrls` (true for `postgres`, `supabase_admin`, `service_role`) and keep blocking `authenticated`. Do not `DISABLE TRIGGER` as the documented promote path.
 
-**Middleware must split HTML vs JSON.** Unauthenticated `/admin` and `/catalog` redirect to `/auth/signin`. Unauthenticated `/api/admin/*` must return `401` JSON — a redirect would send `fetch` to an HTML login page. Non-admin `/admin` → `403` HTML; non-admin `/api/admin/*` → `403` JSON. Treat both `/admin` and `/api/admin` as admin prefixes.
+Keep the function **SECURITY INVOKER** (the default). Do not copy `SECURITY DEFINER` from `is_admin()` / `handle_new_user()` — under DEFINER, `current_user` is the owner and every client could change `role`. Use `current_user`, not `session_user`: after `SET LOCAL ROLE authenticated`, `session_user` is still `postgres` and would wrongly allow the change.
+
+**Middleware must split HTML vs JSON.** Unauthenticated `/admin` and `/catalog` redirect to `/auth/signin`. Unauthenticated `/api/admin/*` must return `401` JSON — a redirect would send `fetch` to an HTML login page. Non-admin `/admin` → HTTP **403** HTML (not a 302); non-admin `/api/admin/*` → `403` JSON. Treat both `/admin` and `/api/admin` as admin prefixes.
+
+**`403.astro` is not a special status route.** Astro only auto-statuses `/404` and `/500`. To keep `/admin` in the URL and still send 403: `const page = await context.rewrite("/403"); return new Response(page.body, { status: 403, headers: page.headers })`. Also set `Astro.response.status = 403` in the page frontmatter. Do not `redirect("/403")` (that is a 302). Rewrite re-runs middleware; `/403` is not an admin prefix, so it will not loop.
 
 **Fail closed on a missing profile.** If `auth.getUser()` succeeds but `profiles` has no row, the user is not an admin. Do not invent a default role.
 
@@ -59,7 +63,7 @@ Queries and mutations always use `createClient` from `src/lib/supabase.ts` (user
 
 ### Overview
 
-Make the first admin promotable, attach `profile` to every request, protect catalog/admin routes, and put Catalog / Admin links in the shared Topbar.
+Make the first admin promotable, attach `profile` to every request, protect catalog/admin routes, and put session chrome in Layout. Catalog / Admin nav links wait until those pages exist (Phases 3–4).
 
 ### Changes Required:
 
@@ -69,7 +73,7 @@ Make the first admin promotable, attach `profile` to every request, protect cata
 
 **Intent**: Let Studio/`postgres` (and `service_role`) promote an admin while still blocking self-promotion from the anon-key client.
 
-**Contract**: Replace `prevent_profile_role_change` so a role change is allowed only when `pg_roles.rolbypassrls` is true for `current_user`. All other callers still `RAISE EXCEPTION 'profiles.role cannot be changed'`. RLS `profiles_update_own` stays as-is.
+**Contract**: Replace `prevent_profile_role_change` so a role change is allowed only when `pg_roles.rolbypassrls` is true for `current_user`. All other callers still `RAISE EXCEPTION 'profiles.role cannot be changed'`. Function stays **SECURITY INVOKER** (do not add `DEFINER`). RLS `profiles_update_own` stays as-is.
 
 ```sql
 IF EXISTS (
@@ -100,8 +104,8 @@ END IF;
 - `PROTECTED_ROUTES`: `/dashboard`, `/catalog`, `/admin` (prefix match, same as today).
 - Admin prefixes: `/admin` and `/api/admin`.
 - Unauthenticated + protected HTML → redirect `/auth/signin`. Unauthenticated + `/api/admin` → `401` JSON `{ "error": "Unauthorized" }`.
-- Authenticated non-admin + `/admin` → `403` HTML page. Authenticated non-admin + `/api/admin` → `403` JSON `{ "error": "Forbidden" }`.
-- `/api/auth/*` stays public.
+- Authenticated non-admin + `/admin` → rewrite `/403` and return that body with **status 403** (see Critical Implementation Details). Authenticated non-admin + `/api/admin` → `403` JSON `{ "error": "Forbidden" }`.
+- `/api/auth/*` stays public. `/403` is public (no login required) so rewrite does not loop.
 
 #### 4. Locals typing
 
@@ -117,15 +121,15 @@ END IF;
 
 **Intent**: Signed-in non-admins hitting `/admin` get a real page, not an empty 500.
 
-**Contract**: Renders inside `Layout`. Explains the page is admin-only and links to `/catalog`. Middleware returns this route (or an equivalent `403` Response that renders it) — do not redirect to `/catalog`.
+**Contract**: Renders inside `Layout`. Explains the page is admin-only and links to `/dashboard` (the `/catalog` link is added in Phase 4). Frontmatter sets `Astro.response.status = 403`. Direct visits to `/403` also send 403. Middleware must **rewrite** this page for `/admin` (not redirect) and wrap the rewrite `Response` so the client sees status 403 while the URL stays `/admin/...`.
 
 #### 6. Shared Topbar in Layout
 
 **Files**: `src/layouts/Layout.astro`, `src/components/Topbar.astro`
 
-**Intent**: Every page shows session chrome; signed-in users can reach Catalog; admins can reach Admin.
+**Intent**: Every Layout page shows session chrome without duplicating Topbar or linking to routes that do not exist yet.
 
-**Contract**: Layout renders `Topbar` above the slot (keep the missing-config Banner). Topbar uses `Astro.locals.user` and `Astro.locals.profile`. Signed-in: email, Catalog (`/catalog`), Dashboard (`/dashboard`), Admin (`/admin/catalog`) only when `profile.role === 'admin'`, sign-out form. Signed-out: Sign in / Sign up. Remove the duplicate Topbar include from `Welcome.astro` so it is not rendered twice on `/`.
+**Contract**: Layout renders `Topbar` above the slot (keep the missing-config Banner). This affects every Layout consumer: `/`, `/dashboard`, `/auth/signin`, `/auth/signup`, `/auth/confirm-email`, and later catalog/admin pages. Topbar sits **outside** page-level `bg-cosmic` wrappers — keep its styles readable on both the cosmic pages and the default body background (a full-width bar with its own background, not white-on-transparent). Topbar uses `Astro.locals.user` (profile is available but **do not add Catalog or Admin hrefs in this phase**). Signed-in: email, Dashboard (`/dashboard`), sign-out form. Signed-out: Sign in / Sign up. Remove the duplicate Topbar include from `Welcome.astro`. Dashboard may keep its in-page sign-out; that duplication is acceptable until a later cleanup.
 
 ### Success Criteria:
 
@@ -138,13 +142,13 @@ END IF;
 #### Manual Verification:
 
 - `npx supabase db reset` applies the new migration without errors
-- In Studio SQL as postgres: `UPDATE profiles SET role = 'admin'` for a real user succeeds; that user then sees Admin in the Topbar after refresh
+- In Studio SQL as postgres: `UPDATE profiles SET role = 'admin'` for a real user succeeds
 - As that user via the app (or SQL `SET ROLE authenticated`): `UPDATE profiles SET role = 'admin'` on their own row still fails
 - Signed-out visit to `/catalog` or `/admin/catalog` redirects to `/auth/signin`
 - Signed-in non-admin visit to `/admin/catalog` returns 403 (not a redirect to catalog)
 - Signed-out `fetch` to `/api/admin/catalog` returns 401 JSON (not an HTML redirect)
 - Signed-in non-admin `fetch` to `/api/admin/catalog` returns 403 JSON
-- Signed-in user Topbar shows Catalog; Admin link appears only after promote
+- Topbar appears once on Layout pages including sign-in, confirm-email, and dashboard; Welcome does not render a second Topbar; Catalog and Admin links are absent
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
@@ -180,7 +184,7 @@ Add Zod as a direct dependency, extract catalog CRUD into a service, and expose 
 
 **Intent**: All `catalog_items` reads/writes go through one module so pages and API routes do not inline Supabase queries.
 
-**Contract**: Functions take a Supabase client (session) plus typed input. At minimum: `listApproved`, `listAll` (optional `status` filter), `getById`, `create` (status forced to `pending`), `update` (title, description, tags, and/or status). Map PostgREST errors to a small typed failure the API layer can turn into 403/404/500. Do not query `user_assignments`.
+**Contract**: Functions take a Supabase client (session) plus typed input. At minimum: `listApproved`, `listAll` (optional `status` filter), `getById`, `create` (status forced to `pending`), `update` (title, description, tags, and/or status `approved`|`rejected` — never `pending`). Map PostgREST errors to a small typed failure the API layer can turn into 403/404/500. Do not query `user_assignments`.
 
 #### 4. Create/update schemas
 
@@ -193,7 +197,7 @@ Add Zod as a direct dependency, extract catalog CRUD into a service, and expose 
 - `title`: trimmed string, 1–200 chars
 - `description`: optional string, max 5000; empty string stored as `null`
 - `tags`: array of 0–20 unique trimmed strings, each 1–50 chars (API accepts `string[]`; the form may send a comma-separated string that the handler splits)
-- `status` (PATCH only): `pending` | `approved` | `rejected`
+- `status` (PATCH only): `approved` | `rejected` only — cannot set `pending`. New rows become `pending` exclusively via POST.
 - POST ignores client `status` and always inserts `pending`
 
 #### 5. Admin collection API
@@ -210,7 +214,7 @@ Add Zod as a direct dependency, extract catalog CRUD into a service, and expose 
 
 **Intent**: Read and update a single item, including approve/reject via `status`.
 
-**Contract**: `prerender = false`. `GET` → one item or 404. `PATCH` → partial update of title/description/tags/status. Invalid UUID → 400. No `DELETE` handler.
+**Contract**: `prerender = false`. `GET` → one item or 404. `PATCH` → partial update of title/description/tags and/or status (`approved` or `rejected` only; `pending` is 400). Invalid UUID → 400. No `DELETE` handler.
 
 ### Success Criteria:
 
@@ -254,7 +258,7 @@ Build the admin list (all statuses, filterable) and create/edit form as React is
 
 **Intent**: One screen for the whole catalog so the admin can filter, open an item, and approve/reject without hunting URLs.
 
-**Contract**: Route `/admin/catalog` (protected by middleware). Island receives the initial list as props (SSR via `listAll`) and refreshes via `GET /api/admin/catalog?status=`. Filter control: All / Pending / Approved / Rejected; default All. Pending rows are visually distinct (badge). Row actions: Edit (link to `/admin/catalog/[id]`), Approve, Reject (`PATCH` status). Empty state when there are no items for the current filter. Link to `/admin/catalog/new`.
+**Contract**: Route `/admin/catalog` (protected by middleware). Island receives the initial list as props (SSR via `listAll`) and refreshes via `GET /api/admin/catalog?status=`. Filter control: All / Pending / Approved / Rejected; default All. Pending rows are visually distinct (badge). Row actions: Edit (link to `/admin/catalog/[id]`), Approve, Reject (`PATCH` status). Empty state when there are no items for the current filter. Link to `/admin/catalog/new`. Add an Admin link (`/admin/catalog`) to Topbar, visible only when `profile.role === 'admin'`.
 
 #### 3. Create and edit form
 
@@ -262,7 +266,7 @@ Build the admin list (all statuses, filterable) and create/edit form as React is
 
 **Intent**: Admin can enter title, description, and tags, and change status on an existing item.
 
-**Contract**: New page POSTs to `/api/admin/catalog` then navigates to the list (or the new item). Edit page loads the item server-side (`getById`); missing id → 404. Form fields: title, description, tags as a comma-separated input mapped to `string[]`. Edit also exposes Approve / Reject (or a status control). Show API `details` next to fields. Extract any non-trivial submit logic to `src/components/hooks/` (CLAUDE.md), not `@/hooks`.
+**Contract**: New page POSTs to `/api/admin/catalog` then navigates to the list (or the new item). Edit page loads the item server-side (`getById`); missing id → 404. Form fields: title, description, tags as a comma-separated input mapped to `string[]`. Edit exposes Approve / Reject only (no control that sets `pending`). Show API `details` next to fields. Extract any non-trivial submit logic to `src/components/hooks/` (CLAUDE.md), not `@/hooks`.
 
 ### Success Criteria:
 
@@ -279,6 +283,7 @@ Build the admin list (all statuses, filterable) and create/edit form as React is
 - Admin rejects an item; re-approves it from the edit page; filter “Rejected” then “Approved” matches
 - Non-admin visiting `/admin/catalog` still gets 403
 - No delete button or route is exposed in the UI
+- Admin Topbar shows Admin (`/admin/catalog`); non-admin Topbar does not
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
@@ -298,7 +303,7 @@ Prove the north star: a signed-in non-admin sees approved items on `/catalog` an
 
 **Intent**: Authenticated browse-only view of the approved catalog (title, description, tags). No search, no assign.
 
-**Contract**: SSR via `listApproved` (no React island required). Empty state when there are zero approved items (copy should not tell the user to create catalog rows). Do not render status. Do not fetch `/api/admin`.
+**Contract**: SSR via `listApproved` (no React island required). Empty state when there are zero approved items (copy should not tell the user to create catalog rows). Do not render status. Do not fetch `/api/admin`. Add a Catalog link (`/catalog`) to Topbar for all signed-in users. Update the 403 page’s “go back” link from `/dashboard` to `/catalog`.
 
 #### 2. Post-login destination
 
@@ -331,6 +336,7 @@ Prove the north star: a signed-in non-admin sees approved items on `/catalog` an
 - `/catalog` with zero approved items shows the empty state
 - Admin still sees pending/rejected on `/admin/catalog` in the same session
 - Signed-out `/catalog` still redirects to sign-in
+- Signed-in Topbar shows Catalog; 403 page links to `/catalog`
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
@@ -385,20 +391,20 @@ MVP catalog volume is small (PRD `target_scale.data_volume: small`). List endpoi
 
 #### Automated
 
-- [ ] 1.1 Migration file exists at `supabase/migrations/20260817120000_profiles_role_bypass_rls.sql`
-- [ ] 1.2 `npm run lint` passes
-- [ ] 1.3 `npm run build` passes
+- [x] 1.1 Migration file exists at `supabase/migrations/20260817120000_profiles_role_bypass_rls.sql`
+- [x] 1.2 `npm run lint` passes
+- [x] 1.3 `npm run build` passes
 
 #### Manual
 
-- [ ] 1.4 `npx supabase db reset` applies the new migration without errors
-- [ ] 1.5 Studio SQL as postgres can `UPDATE profiles SET role = 'admin'`
-- [ ] 1.6 Authenticated self-update of `profiles.role` still fails
-- [ ] 1.7 Signed-out `/catalog` and `/admin/catalog` redirect to sign-in
-- [ ] 1.8 Signed-in non-admin `/admin/catalog` returns 403
-- [ ] 1.9 Signed-out `fetch` `/api/admin/catalog` returns 401 JSON
-- [ ] 1.10 Signed-in non-admin `fetch` `/api/admin/catalog` returns 403 JSON
-- [ ] 1.11 Topbar shows Catalog for signed-in users and Admin only after promote
+- [x] 1.4 `npx supabase db reset` applies the new migration without errors
+- [x] 1.5 Studio SQL as postgres can `UPDATE profiles SET role = 'admin'`
+- [x] 1.6 Authenticated self-update of `profiles.role` still fails
+- [x] 1.7 Signed-out `/catalog` and `/admin/catalog` redirect to sign-in
+- [x] 1.8 Signed-in non-admin `/admin/catalog` returns 403
+- [x] 1.9 Signed-out `fetch` `/api/admin/catalog` returns 401 JSON
+- [x] 1.10 Signed-in non-admin `fetch` `/api/admin/catalog` returns 403 JSON
+- [x] 1.11 Topbar appears once on Layout pages; Catalog and Admin links are absent
 
 ### Phase 2: Catalog service and admin JSON APIs
 
@@ -431,6 +437,7 @@ MVP catalog volume is small (PRD `target_scale.data_volume: small`). List endpoi
 - [ ] 3.6 Reject then re-approve works; status filters match
 - [ ] 3.7 Non-admin `/admin/catalog` returns 403
 - [ ] 3.8 No delete control in the UI
+- [ ] 3.9 Admin Topbar shows Admin; non-admin Topbar does not
 
 ### Phase 4: User-facing approved catalog
 
@@ -447,3 +454,4 @@ MVP catalog volume is small (PRD `target_scale.data_volume: small`). List endpoi
 - [ ] 4.6 Empty approved catalog shows the empty state
 - [ ] 4.7 Admin still sees pending/rejected on `/admin/catalog`
 - [ ] 4.8 Signed-out `/catalog` redirects to sign-in
+- [ ] 4.9 Signed-in Topbar shows Catalog; 403 page links to `/catalog`

@@ -20,11 +20,11 @@ An operator promotes one admin with SQL. That admin lists, creates (pending), ed
 | -------- | ------ | ---------------- |
 | User catalog depth | Authenticated approved list, no search/assign | Proves the gate end-to-end without stealing S-02 |
 | First admin | Fix trigger for `rolbypassrls`, document Studio SQL | Matches F-01; no privileged app endpoint or service-role key |
-| Status workflow | Create pending; approve/reject; edit any status; re-approve rejected; no delete | Covers FR-004/FR-006; rejected stays admin-only via RLS |
+| Status workflow | Create pending; approve/reject; edit any status; re-approve rejected; no delete; cannot PATCH back to pending | Covers FR-004/FR-006; rejected stays admin-only via RLS |
 | API style | JSON + Zod + `src/lib/services/` | Sets the domain API precedent CLAUDE.md already asks for |
 | Testing | Manual + lint/build | AGENTS.md: no test runner unless this change introduces one |
 | Admin gate | Middleware loads `profile`; 403 HTML/JSON | Users should not see a broken admin UI; RLS remains the write backstop |
-| Chrome | Topbar in Layout; Catalog for signed-in; Admin if admin | Product navigation exists once instead of orphan pages |
+| Chrome | Topbar in Layout in Phase 1; Admin link in Phase 3; Catalog link in Phase 4 | Avoids 404 nav; auth/dashboard pages inherit the bar |
 | Admin list | One list, filter by status, default all | Edit/approve/reject live in one place |
 
 ## Scope

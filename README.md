@@ -114,6 +114,20 @@ npx supabase db reset
 
 That recreates the local database and runs every migration. Repeat `db reset` whenever you add or change a migration file.
 
+### First admin
+
+Signups always get `profiles.role = 'user'`. Promote the first admin in **Studio SQL as the `postgres` role** (SQL Editor → role dropdown), not as the signed-in user:
+
+```sql
+SELECT id, email FROM auth.users;
+
+UPDATE public.profiles
+SET role = 'admin'
+WHERE id = '<user-uuid-from-the-query-above>';
+```
+
+A `BEFORE UPDATE` trigger blocks role changes from the `authenticated` client. `postgres` (and `service_role`) can update `role` because they have `BYPASSRLS`. After promoting, sign out and back in so middleware reloads the profile.
+
 ### Using a cloud Supabase project instead
 
 If you prefer to use a hosted Supabase project, add these variables to your `.env` and `.dev.vars` files:

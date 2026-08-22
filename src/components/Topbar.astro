@@ -10,6 +10,9 @@ const isAdmin = profile?.role === "admin";
         <>
           <span class="truncate text-zinc-400">{user.email}</span>
           <div class="flex items-center gap-4">
+            <a href="/catalog" class="text-zinc-200 transition-colors hover:text-white hover:underline">
+              Catalog
+            </a>
             <a href="/dashboard" class="text-zinc-200 transition-colors hover:text-white hover:underline">
               Dashboard
             </a>

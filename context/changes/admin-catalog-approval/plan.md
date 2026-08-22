@@ -443,15 +443,15 @@ MVP catalog volume is small (PRD `target_scale.data_volume: small`). List endpoi
 
 #### Automated
 
-- [x] 4.1 `npm run lint` passes
-- [x] 4.2 `npm run build` passes
+- [x] 4.1 `npm run lint` passes — 803628c
+- [x] 4.2 `npm run build` passes — 803628c
 
 #### Manual
 
-- [x] 4.3 Sign-in as non-admin lands on `/catalog`
-- [x] 4.4 Approved item is visible with title, description, and tags
-- [x] 4.5 Pending and rejected items are not visible on `/catalog`
-- [x] 4.6 Empty approved catalog shows the empty state
-- [x] 4.7 Admin still sees pending/rejected on `/admin/catalog`
-- [x] 4.8 Signed-out `/catalog` redirects to sign-in
-- [x] 4.9 Signed-in Topbar shows Catalog; 403 page links to `/catalog`
+- [x] 4.3 Sign-in as non-admin lands on `/catalog` — 803628c
+- [x] 4.4 Approved item is visible with title, description, and tags — 803628c
+- [x] 4.5 Pending and rejected items are not visible on `/catalog` — 803628c
+- [x] 4.6 Empty approved catalog shows the empty state — 803628c
+- [x] 4.7 Admin still sees pending/rejected on `/admin/catalog` — 803628c
+- [x] 4.8 Signed-out `/catalog` redirects to sign-in — 803628c
+- [x] 4.9 Signed-in Topbar shows Catalog; 403 page links to `/catalog` — 803628c

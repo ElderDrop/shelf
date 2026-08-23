@@ -3,7 +3,7 @@ project: Shelf
 version: 1
 status: draft
 created: 2026-06-07
-updated: 2026-08-22
+updated: 2026-08-23
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -31,7 +31,7 @@ Kolekcjoner mediów fizycznych nie ma jednego miejsca łączącego posiadane poz
 |---|---|---|---|---|---|
 | F-01 | catalog-schema-rls | (foundation) minimal catalog schema, assignment tables, admin role, and RLS policies landed | — | NFR (access), Access Control | in-progress |
 | S-01 | admin-catalog-approval | admin can manually create or edit catalog items and approve them so approved items appear in the user-facing catalog | F-01 | FR-001, FR-004, FR-006 | in-progress |
-| S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | proposed |
+| S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | planning |
 | S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | planning |
 | S-04 | tag-recommendations | receive item recommendations based on tags or description of items in their library | S-02 | FR-007 | proposed |
 | S-05 | readonly-share-link | generate a read-only share link exposing library and wishlist without edit rights; recipient views without editing | S-02 | FR-008 | proposed |
@@ -100,7 +100,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Core collector value proposition; depends on admin seed from S-01 — the deliberate MVP trade-off noted in FR-002.
-- **Status:** proposed
+- **Status:** planning
 
 ### S-03: Admin metadata enrichment
 
@@ -111,8 +111,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** S-02
 - **Blockers:** —
 - **Unknowns:**
-  - Which external sources and scraping approach for metadata enrichment? — Owner: product owner. Block: yes.
-- **Risk:** Highest integration uncertainty in MVP; parallel with S-02 to avoid blocking collector path, but planning blocked until scraping source is decided.
+  - Google Books API quota without vs with API key in production — Owner: team. Block: no.
+- **Risk:** Books-only scope; ambiguous titles may return wrong volume (first-result policy); sync lookup may hit Worker time limits at scale — Queues deferred to a follow-up if needed.
 - **Status:** planning
 
 ### S-04: Tag and description recommendations
@@ -158,7 +158,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | F-01 | catalog-schema-rls | Catalog schema, assignments, admin role, and RLS | yes | Run `/10x-plan catalog-schema-rls` — unlocks north star S-01 |
 | S-01 | admin-catalog-approval | Admin manual catalog CRUD and approval workflow | no | After F-01 |
 | S-02 | catalog-search-assign | Search approved catalog, assign to library/wishlist, view collections | no | After S-01 |
-| S-03 | admin-metadata-enrichment | Admin automated metadata enrichment with review | no | Blocked: scraping source unknown |
+| S-03 | admin-metadata-enrichment | Admin automated metadata enrichment with review | yes | Google Books, books-only; run `/10x-implement admin-metadata-enrichment` |
 | S-04 | tag-recommendations | Simple tag/description overlap recommendations | no | After S-02 |
 | S-05 | readonly-share-link | Read-only share link for library and wishlist | no | After S-02 |
 | S-06 | ui-polish | Visual/UX polish for admin and collector surfaces | no | After S-01; prefer after more UI exists |
@@ -166,7 +166,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 ## Open Roadmap Questions
 
 1. **Wymierne progi NFR wydajności** — Owner: product owner. Block: roadmap-wide (no).
-2. **Źródła i podejście do scrapowania metadanych (FR-005)** — Owner: product owner. Block: S-03.
+2. **Google Books API key and production quota (FR-005 / S-03)** — Owner: team. Block: no (optional key; unkeyed OK for dev).
 
 ## Parked
 

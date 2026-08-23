@@ -108,26 +108,31 @@ export async function listForUser(client: SupabaseClient, listType?: ListType): 
   return (data as AssignmentWithEmbedRow[]).map(mapWithItem);
 }
 
+export interface CatalogAssignmentState {
+  listType: ListType;
+  assignmentId: string;
+}
+
 export async function listAssignmentStateForCatalog(
   client: SupabaseClient,
   catalogItemIds: string[],
-): Promise<Map<string, ListType>> {
-  const state = new Map<string, ListType>();
+): Promise<Map<string, CatalogAssignmentState>> {
+  const state = new Map<string, CatalogAssignmentState>();
   if (catalogItemIds.length === 0) {
     return state;
   }
 
   const { data, error } = await client
     .from("user_assignments")
-    .select("catalog_item_id, list_type")
+    .select("id, catalog_item_id, list_type")
     .in("catalog_item_id", catalogItemIds);
 
   if (error) {
     throw mapPostgrestError(error);
   }
 
-  for (const row of data as { catalog_item_id: string; list_type: ListType }[]) {
-    state.set(row.catalog_item_id, row.list_type);
+  for (const row of data as { id: string; catalog_item_id: string; list_type: ListType }[]) {
+    state.set(row.catalog_item_id, { listType: row.list_type, assignmentId: row.id });
   }
 
   return state;

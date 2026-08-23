@@ -359,28 +359,28 @@ No database migrations required. Existing RLS and UNIQUE constraint support all 
 
 #### Automated
 
-- [x] 1.1 Linting passes: `npm run lint`
-- [x] 1.2 Production build passes: `npm run build`
-- [x] 1.3 Type checking passes via lint (type-checked ESLint rules)
+- [x] 1.1 Linting passes: `npm run lint` — e0e06ec
+- [x] 1.2 Production build passes: `npm run build` — e0e06ec
+- [x] 1.3 Type checking passes via lint (type-checked ESLint rules) — e0e06ec
 
 #### Manual
 
-- [x] 1.4 Authenticated GET/POST assignment API works; upsert move on duplicate
-- [x] 1.5 Unauthenticated assignment API returns 401 JSON
-- [x] 1.6 Assign to pending/rejected item returns 403
+- [x] 1.4 Authenticated GET/POST assignment API works; upsert move on duplicate — e0e06ec
+- [x] 1.5 Unauthenticated assignment API returns 401 JSON — e0e06ec
+- [x] 1.6 Assign to pending/rejected item returns 403 — e0e06ec
 
 ### Phase 2: Catalog search and assign UI
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Production build passes: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint`
+- [x] 2.2 Production build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 SSR search via `?q=` filters approved items
-- [ ] 2.4 Assign, move, and remove from catalog page work
-- [ ] 2.5 Pending items never appear in search
+- [x] 2.3 SSR search via `?q=` filters approved items
+- [x] 2.4 Assign, move, and remove from catalog page work
+- [x] 2.5 Pending items never appear in search
 
 ### Phase 3: Library and wishlist pages
 

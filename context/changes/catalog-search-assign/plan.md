@@ -359,15 +359,15 @@ No database migrations required. Existing RLS and UNIQUE constraint support all 
 
 #### Automated
 
-- [ ] 1.1 Linting passes: `npm run lint`
-- [ ] 1.2 Production build passes: `npm run build`
-- [ ] 1.3 Type checking passes via lint (type-checked ESLint rules)
+- [x] 1.1 Linting passes: `npm run lint`
+- [x] 1.2 Production build passes: `npm run build`
+- [x] 1.3 Type checking passes via lint (type-checked ESLint rules)
 
 #### Manual
 
-- [ ] 1.4 Authenticated GET/POST assignment API works; upsert move on duplicate
-- [ ] 1.5 Unauthenticated assignment API returns 401 JSON
-- [ ] 1.6 Assign to pending/rejected item returns 403
+- [x] 1.4 Authenticated GET/POST assignment API works; upsert move on duplicate
+- [x] 1.5 Unauthenticated assignment API returns 401 JSON
+- [x] 1.6 Assign to pending/rejected item returns 403
 
 ### Phase 2: Catalog search and assign UI
 

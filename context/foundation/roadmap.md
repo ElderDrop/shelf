@@ -31,7 +31,7 @@ Kolekcjoner mediów fizycznych nie ma jednego miejsca łączącego posiadane poz
 |---|---|---|---|---|---|
 | F-01 | catalog-schema-rls | (foundation) minimal catalog schema, assignment tables, admin role, and RLS policies landed | — | NFR (access), Access Control | in-progress |
 | S-01 | admin-catalog-approval | admin can manually create or edit catalog items and approve them so approved items appear in the user-facing catalog | F-01 | FR-001, FR-004, FR-006 | in-progress |
-| S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | planning |
+| S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | in-progress |
 | S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | planning |
 | S-04 | tag-recommendations | receive item recommendations based on tags or description of items in their library | S-02 | FR-007 | proposed |
 | S-05 | readonly-share-link | generate a read-only share link exposing library and wishlist without edit rights; recipient views without editing | S-02 | FR-008 | proposed |
@@ -100,7 +100,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Core collector value proposition; depends on admin seed from S-01 — the deliberate MVP trade-off noted in FR-002.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-03: Admin metadata enrichment
 

@@ -51,6 +51,7 @@ function mapPostgrestError(error: { code?: string; message: string }): CatalogSe
   return new CatalogServiceError("unknown", error.message, error);
 }
 
+/** Lists up to PostgREST max_rows (default 1000); excess rows are truncated silently. */
 export async function listApproved(client: SupabaseClient): Promise<CatalogItem[]> {
   const { data, error } = await client
     .from("catalog_items")
@@ -65,6 +66,7 @@ export async function listApproved(client: SupabaseClient): Promise<CatalogItem[
   return (data as CatalogRow[]).map(mapRow);
 }
 
+/** Lists up to PostgREST max_rows (default 1000); excess rows are truncated silently. */
 export async function listAll(client: SupabaseClient, status?: CatalogStatus): Promise<CatalogItem[]> {
   let query = client
     .from("catalog_items")

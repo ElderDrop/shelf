@@ -27,12 +27,28 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.user = user ?? null;
 
     if (user) {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("id, role, created_at, updated_at")
         .eq("id", user.id)
         .maybeSingle();
-      context.locals.profile = data ?? null;
+
+      if (error) {
+        console.error("profiles lookup failed:", error.message);
+        context.locals.profile = null;
+        // Fail closed on admin surfaces — do not treat as non-admin (would 403).
+        if (isApiAdmin(pathname)) {
+          return jsonError(500, "Profile lookup failed");
+        }
+        if (isAdminPage(pathname)) {
+          return new Response("Profile lookup failed", {
+            status: 500,
+            headers: { "Content-Type": "text/plain; charset=utf-8" },
+          });
+        }
+      } else {
+        context.locals.profile = data ?? null;
+      }
     } else {
       context.locals.profile = null;
     }

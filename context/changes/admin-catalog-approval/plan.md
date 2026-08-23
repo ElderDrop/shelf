@@ -371,6 +371,7 @@ MVP catalog volume is small (PRD `target_scale.data_volume: small`). List endpoi
 - **Production:** Apply the migration before running the promote SQL. Worker deploy does not change Postgres — run `supabase db push` (or the project’s usual migration deploy) as a separate, human-approved step (`context/foundation/infrastructure.md`).
 - **Rollback:** Reverting the trigger function restores the “cannot promote even as postgres” bug; only roll back if a replacement promote path exists.
 - **Existing users:** No backfill. Every signup already has a `profiles` row from F-01.
+- **List truncation (impl-review F2):** `listApproved` / `listAll` return all matching rows up to PostgREST `max_rows` (default 1000). Truncation is silent — UIs can look complete while omitting rows. Documented in README; pagination / truncated flag deferred to S-02 or S-06.
 
 ## References
 

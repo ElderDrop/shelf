@@ -171,6 +171,8 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 | `/admin/catalog` | Admins only (`profiles.role = 'admin'`) | Create, edit, approve, and reject catalog items  |
 | `/403`           | Anyone                                 | Forbidden page (also rewritten for non-admin `/admin` visits) |
 
+**List cap:** `/catalog` and `/admin/catalog` load all matching rows up to PostgREST `max_rows` (default **1000**). Beyond that, results are truncated silently — no pagination yet (follow-up: S-02 / S-06).
+
 Promote the first admin with the SQL in [First admin](#first-admin) above.
 
 ## Deployment

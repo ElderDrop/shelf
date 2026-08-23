@@ -3,6 +3,13 @@ import type { CatalogItem, CatalogStatus } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { ApiErrorBody } from "@/lib/api-response";
 
@@ -22,18 +29,24 @@ export default function CatalogList({ initialItems }: Props) {
   const [items, setItems] = useState(initialItems);
   const [filter, setFilter] = useState<FilterValue>("all");
   const [error, setError] = useState<string | null>(null);
+  const [statusPending, setStatusPending] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const actionsDisabled = isPending || statusPending;
 
   async function refresh(nextFilter: FilterValue) {
     setError(null);
     const query = nextFilter === "all" ? "" : `?status=${nextFilter}`;
-    const response = await fetch(`/api/admin/catalog${query}`);
-    const payload = (await response.json()) as ApiErrorBody & { data?: CatalogItem[] };
-    if (!response.ok) {
-      setError(payload.error || "Failed to load catalog");
-      return;
+    try {
+      const response = await fetch(`/api/admin/catalog${query}`);
+      const payload = (await response.json()) as ApiErrorBody & { data?: CatalogItem[] };
+      if (!response.ok) {
+        setError(payload.error || "Failed to load catalog");
+        return;
+      }
+      setItems(payload.data ?? []);
+    } catch {
+      setError("Network error");
     }
-    setItems(payload.data ?? []);
   }
 
   function onFilterChange(next: FilterValue) {
@@ -44,18 +57,26 @@ export default function CatalogList({ initialItems }: Props) {
   }
 
   async function patchStatus(id: string, status: "approved" | "rejected") {
+    if (statusPending) return;
+    setStatusPending(true);
     setError(null);
-    const response = await fetch(`/api/admin/catalog/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    const payload = (await response.json()) as ApiErrorBody & { data?: CatalogItem };
-    if (!response.ok) {
-      setError(payload.error || "Failed to update status");
-      return;
+    try {
+      const response = await fetch(`/api/admin/catalog/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const payload = (await response.json()) as ApiErrorBody & { data?: CatalogItem };
+      if (!response.ok) {
+        setError(payload.error || "Failed to update status");
+        return;
+      }
+      await refresh(filter);
+    } catch {
+      setError("Network error");
+    } finally {
+      setStatusPending(false);
     }
-    await refresh(filter);
   }
 
   return (
@@ -63,22 +84,30 @@ export default function CatalogList({ initialItems }: Props) {
       <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
         <CardTitle className="text-xl">Catalog</CardTitle>
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 text-sm text-zinc-400">
-            Status
-            <select
-              className="rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-zinc-100"
+          <div className="flex items-center gap-2 text-sm text-zinc-400">
+            <span id="catalog-status-filter-label">Status</span>
+            <Select
               value={filter}
-              disabled={isPending}
-              onChange={(event) => {
-                onFilterChange(event.target.value as FilterValue);
+              disabled={actionsDisabled}
+              onValueChange={(value) => {
+                onFilterChange(value as FilterValue);
               }}
             >
-              <option value="all">All</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </label>
+              <SelectTrigger
+                aria-labelledby="catalog-status-filter-label"
+                className="w-[140px] border-zinc-700 bg-zinc-900 text-zinc-100"
+                size="sm"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="border-zinc-700 bg-zinc-900 text-zinc-100">
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button asChild>
             <a href="/admin/catalog/new">New item</a>
           </Button>
@@ -115,7 +144,7 @@ export default function CatalogList({ initialItems }: Props) {
                     {item.status !== "approved" ? (
                       <Button
                         size="sm"
-                        disabled={isPending}
+                        disabled={actionsDisabled}
                         onClick={() => {
                           void patchStatus(item.id, "approved");
                         }}
@@ -127,7 +156,7 @@ export default function CatalogList({ initialItems }: Props) {
                       <Button
                         size="sm"
                         variant="secondary"
-                        disabled={isPending}
+                        disabled={actionsDisabled}
                         onClick={() => {
                           void patchStatus(item.id, "rejected");
                         }}

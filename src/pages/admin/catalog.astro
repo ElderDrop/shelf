@@ -3,13 +3,32 @@ import Layout from "@/layouts/Layout.astro";
 import CatalogList from "@/components/admin/CatalogList";
 import { createClient } from "@/lib/supabase";
 import { listAll } from "@/lib/services/catalog";
+import type { CatalogItem } from "@/types";
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
-const items = supabase ? await listAll(supabase) : [];
+let configError = false;
+let items: CatalogItem[] = [];
+
+if (!supabase) {
+  configError = true;
+  Astro.response.status = 500;
+} else {
+  items = await listAll(supabase);
+}
 ---
 
-<Layout title="Admin catalog">
-  <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 sm:p-8">
-    <CatalogList client:load initialItems={items} />
-  </main>
-</Layout>
+{
+  configError ? (
+    <Layout title="Configuration error">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-8 text-zinc-100">
+        <h1 class="text-xl font-semibold">Supabase is not configured</h1>
+      </main>
+    </Layout>
+  ) : (
+    <Layout title="Admin catalog">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 sm:p-8">
+        <CatalogList client:load initialItems={items} />
+      </main>
+    </Layout>
+  )
+}

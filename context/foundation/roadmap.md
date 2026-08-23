@@ -3,7 +3,7 @@ project: Shelf
 version: 1
 status: draft
 created: 2026-06-07
-updated: 2026-08-17
+updated: 2026-08-22
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -30,11 +30,12 @@ Kolekcjoner mediów fizycznych nie ma jednego miejsca łączącego posiadane poz
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 |---|---|---|---|---|---|
 | F-01 | catalog-schema-rls | (foundation) minimal catalog schema, assignment tables, admin role, and RLS policies landed | — | NFR (access), Access Control | in-progress |
-| S-01 | admin-catalog-approval | admin can manually create or edit catalog items and approve them so approved items appear in the user-facing catalog | F-01 | FR-001, FR-004, FR-006 | planning |
+| S-01 | admin-catalog-approval | admin can manually create or edit catalog items and approve them so approved items appear in the user-facing catalog | F-01 | FR-001, FR-004, FR-006 | in-progress |
 | S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | proposed |
-| S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | blocked |
+| S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | planning |
 | S-04 | tag-recommendations | receive item recommendations based on tags or description of items in their library | S-02 | FR-007 | proposed |
 | S-05 | readonly-share-link | generate a read-only share link exposing library and wishlist without edit rights; recipient views without editing | S-02 | FR-008 | proposed |
+| S-06 | ui-polish | improve visual consistency and usability of admin and collector surfaces built in earlier slices | S-01 | — | proposed |
 
 ## Streams
 
@@ -45,6 +46,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | A | Katalog admin | `F-01` → `S-01` → `S-03` | Gwiazda przewodnia i ścieżka wzbogacania metadanych; bias szybkości — admin seed przed użytkownikiem. |
 | B | Biblioteka użytkownika | `S-02` | Dołącza do Stream A po `S-01`; rdzeń US-01 i przypisanie z katalogu. |
 | C | Odkrywanie i udostępnianie | `S-04` / `S-05` | Dołącza do Stream B po `S-02`; `S-04` i `S-05` równolegle — szybka ścieżka must-have po bibliotece. |
+| D | UI polish | `S-06` | Po must-have ścieżkach; nie blokuje S-02–S-05 — bias szybkości najpierw funkcja, potem wygląd. |
 
 ## Baseline
 
@@ -86,7 +88,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - How is the single admin account bootstrapped in production? — Owner: team. Block: no.
 - **Risk:** North star slice — without approved catalog items no user assignment is possible (cold start accepted in PRD); sequenced immediately after schema foundation to unblock the collector path.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-02: Catalog search, assign, and library view
 
@@ -111,7 +113,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Which external sources and scraping approach for metadata enrichment? — Owner: product owner. Block: yes.
 - **Risk:** Highest integration uncertainty in MVP; parallel with S-02 to avoid blocking collector path, but planning blocked until scraping source is decided.
-- **Status:** blocked
+- **Status:** planning
 
 ### S-04: Tag and description recommendations
 
@@ -137,6 +139,18 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** Privacy guardrail (no edit via link) is the load-bearing constraint; parallel with recommendations to close the must-have path quickly under time pressure.
 - **Status:** proposed
 
+### S-06: UI polish
+
+- **Outcome:** user and admin see a more consistent, usable UI across catalog, admin, and related surfaces introduced in earlier slices (layout, typography, spacing, empty states, and shared chrome).
+- **Change ID:** ui-polish
+- **PRD refs:** — (quality / UX follow-up; no new FR)
+- **Prerequisites:** S-01
+- **Parallel with:** S-02–S-05 (optional; prefer after enough surfaces exist to polish)
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Easy to expand into a redesign; keep scoped to polish of shipped flows. Sequenced after the north star so MVP speed is not blocked by visual work.
+- **Status:** proposed
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
@@ -147,6 +161,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-03 | admin-metadata-enrichment | Admin automated metadata enrichment with review | no | Blocked: scraping source unknown |
 | S-04 | tag-recommendations | Simple tag/description overlap recommendations | no | After S-02 |
 | S-05 | readonly-share-link | Read-only share link for library and wishlist | no | After S-02 |
+| S-06 | ui-polish | Visual/UX polish for admin and collector surfaces | no | After S-01; prefer after more UI exists |
 
 ## Open Roadmap Questions
 

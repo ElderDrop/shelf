@@ -165,13 +165,24 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 
 ### Catalog routes
 
-| Route            | Who can access                         | Description                                      |
-| ---------------- | -------------------------------------- | ------------------------------------------------ |
-| `/catalog`       | Signed-in users                        | Browse approved catalog items (title, description, tags) |
-| `/admin/catalog` | Admins only (`profiles.role = 'admin'`) | Create, edit, approve, and reject catalog items  |
-| `/403`           | Anyone                                 | Forbidden page (also rewritten for non-admin `/admin` visits) |
+| Route            | Who can access                          | Description                                                             |
+| ---------------- | --------------------------------------- | ----------------------------------------------------------------------- |
+| `/catalog`       | Signed-in users                         | Search and browse approved catalog items; assign to library or wishlist |
+| `/library`       | Signed-in users                         | View and manage items assigned to your library                          |
+| `/wishlist`      | Signed-in users                         | View and manage items on your wishlist                                  |
+| `/admin/catalog` | Admins only (`profiles.role = 'admin'`) | Create, edit, approve, and reject catalog items                         |
+| `/403`           | Anyone                                  | Forbidden page (also rewritten for non-admin `/admin` visits)           |
 
-**List cap:** `/catalog` and `/admin/catalog` load all matching rows up to PostgREST `max_rows` (default **1000**). Beyond that, results are truncated silently — no pagination yet (follow-up: S-02 / S-06).
+### Assignment API
+
+| Route                          | Who can access  | Description                                                     |
+| ------------------------------ | --------------- | --------------------------------------------------------------- |
+| `GET /api/assignments`         | Signed-in users | List your assignments (optional `?list_type=library\|wishlist`) |
+| `POST /api/assignments`        | Signed-in users | Assign item to library or wishlist (upsert on duplicate)        |
+| `PATCH /api/assignments/[id]`  | Signed-in users | Move assignment to the other list                               |
+| `DELETE /api/assignments/[id]` | Signed-in users | Remove assignment from your collection                          |
+
+**List cap:** `/catalog`, `/library`, `/wishlist`, and `/admin/catalog` load all matching rows up to PostgREST `max_rows` (default **1000**). Beyond that, results are truncated silently — no pagination yet (follow-up: S-06).
 
 Promote the first admin with the SQL in [First admin](#first-admin) above.
 

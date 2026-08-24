@@ -3,7 +3,7 @@ change_id: catalog-search-assign
 title: Catalog search, assign, and library view
 status: implementing
 created: 2026-08-23
-updated: 2026-08-23
+updated: 2026-08-24
 archived_at: null
 ---
 

@@ -373,27 +373,27 @@ No database migrations required. Existing RLS and UNIQUE constraint support all 
 
 #### Automated
 
-- [x] 2.1 Linting passes: `npm run lint`
-- [x] 2.2 Production build passes: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint` — b9120a4
+- [x] 2.2 Production build passes: `npm run build` — b9120a4
 
 #### Manual
 
-- [x] 2.3 SSR search via `?q=` filters approved items
-- [x] 2.4 Assign, move, and remove from catalog page work
-- [x] 2.5 Pending items never appear in search
+- [x] 2.3 SSR search via `?q=` filters approved items — b9120a4
+- [x] 2.4 Assign, move, and remove from catalog page work — b9120a4
+- [x] 2.5 Pending items never appear in search — b9120a4
 
 ### Phase 3: Library and wishlist pages
 
 #### Automated
 
-- [ ] 3.1 Linting passes: `npm run lint`
-- [ ] 3.2 Production build passes: `npm run build`
+- [x] 3.1 Linting passes: `npm run lint`
+- [x] 3.2 Production build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Library and wishlist pages show assigned items with metadata
-- [ ] 3.4 Move and remove work from collection pages
-- [ ] 3.5 Topbar links navigate correctly
+- [x] 3.3 Library and wishlist pages show assigned items with metadata
+- [x] 3.4 Move and remove work from collection pages
+- [x] 3.5 Topbar links navigate correctly
 
 ### Phase 4: Integration verification
 

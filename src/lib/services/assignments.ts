@@ -88,6 +88,13 @@ function mapPostgrestError(error: { code?: string; message: string }): Assignmen
   return new AssignmentServiceError("unknown", error.message, error);
 }
 
+/** Library is terminal for list-type: demoting to wishlist is forbidden. */
+function assertNotLibraryToWishlist(current: ListType, target: ListType): void {
+  if (current === "library" && target === "wishlist") {
+    throw new AssignmentServiceError("forbidden", "Cannot move a library item to wishlist");
+  }
+}
+
 /** Lists up to PostgREST max_rows (default 1000); excess rows are truncated silently. */
 export async function listForUser(client: SupabaseClient, listType?: ListType): Promise<AssignmentWithItem[]> {
   let query = client
@@ -163,6 +170,27 @@ export async function assign(client: SupabaseClient, catalogItemId: string, list
   }
 
   if (insertError.code === "23505") {
+    const { data: existing, error: existingError } = await client
+      .from("user_assignments")
+      .select("id, user_id, catalog_item_id, list_type, created_at")
+      .eq("catalog_item_id", catalogItemId)
+      .maybeSingle();
+
+    if (existingError) {
+      throw mapPostgrestError(existingError);
+    }
+
+    if (!existing) {
+      // Unique conflict but no visible row — typically rejected target (RLS WITH CHECK).
+      throw new AssignmentServiceError("forbidden", "Cannot assign to a non-approved catalog item", insertError);
+    }
+
+    assertNotLibraryToWishlist(existing.list_type as ListType, listType);
+
+    if ((existing.list_type as ListType) === listType) {
+      return { assignment: mapAssignment(existing), created: false };
+    }
+
     const { data: updated, error: updateError } = await client
       .from("user_assignments")
       .update({ list_type: listType })
@@ -175,7 +203,6 @@ export async function assign(client: SupabaseClient, catalogItemId: string, list
     }
 
     if (!updated) {
-      // Unique conflict but no visible/updatable row — typically rejected target (RLS WITH CHECK).
       throw new AssignmentServiceError("forbidden", "Cannot assign to a non-approved catalog item", updateError);
     }
 
@@ -200,6 +227,26 @@ export async function updateListType(
   assignmentId: string,
   listType: ListType,
 ): Promise<UserAssignment> {
+  const { data: existing, error: existingError } = await client
+    .from("user_assignments")
+    .select("id, user_id, catalog_item_id, list_type, created_at")
+    .eq("id", assignmentId)
+    .maybeSingle();
+
+  if (existingError) {
+    throw mapPostgrestError(existingError);
+  }
+
+  if (!existing) {
+    throw new AssignmentServiceError("not_found", "Assignment not found");
+  }
+
+  assertNotLibraryToWishlist(existing.list_type as ListType, listType);
+
+  if ((existing.list_type as ListType) === listType) {
+    return mapAssignment(existing);
+  }
+
   const { data, error } = await client
     .from("user_assignments")
     .update({ list_type: listType })

@@ -9,28 +9,22 @@ interface Props {
   unavailable?: boolean;
 }
 
-function listLabel(listType: ListType): string {
-  return listType === "library" ? "Library" : "Wishlist";
-}
-
 export default function CollectionItemActions({ assignmentId, catalogItemId, listType, unavailable = false }: Props) {
   const { loading, error, move, remove } = useAssignmentActions();
 
-  const oppositeList: ListType = listType === "library" ? "wishlist" : "library";
-
   return (
     <div className="mt-4 flex flex-wrap items-center gap-2">
-      {!unavailable ? (
+      {!unavailable && listType === "wishlist" ? (
         <Button
           type="button"
           variant="outline"
           size="sm"
           disabled={loading}
           onClick={() => {
-            void move(catalogItemId, oppositeList);
+            void move(catalogItemId, "library");
           }}
         >
-          Move to {listLabel(oppositeList).toLowerCase()}
+          Move to library
         </Button>
       ) : null}
       <Button

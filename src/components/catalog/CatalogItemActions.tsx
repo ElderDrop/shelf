@@ -16,24 +16,24 @@ function listLabel(listType: ListType): string {
 export default function CatalogItemActions({ catalogItemId, listType, assignmentId }: Props) {
   const { loading, error, assign, move, remove } = useAssignmentActions();
 
-  const oppositeList: ListType = listType === "library" ? "wishlist" : "library";
-
   return (
     <div className="mt-4 flex flex-wrap items-center gap-2">
       {listType ? (
         <>
           <Badge variant="secondary">{listLabel(listType)}</Badge>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={loading}
-            onClick={() => {
-              void move(catalogItemId, oppositeList);
-            }}
-          >
-            Move to {listLabel(oppositeList).toLowerCase()}
-          </Button>
+          {listType === "wishlist" ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={loading}
+              onClick={() => {
+                void move(catalogItemId, "library");
+              }}
+            >
+              Move to library
+            </Button>
+          ) : null}
           {assignmentId ? (
             <Button
               type="button"

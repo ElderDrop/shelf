@@ -328,26 +328,26 @@ No database migrations required. Uses existing `catalog_items.tags`, `descriptio
 
 #### Automated
 
-- [x] 1.1 Linting passes: `npm run lint`
-- [x] 1.2 Production build passes: `npm run build`
-- [x] 1.3 Type checking passes via lint (type-checked ESLint rules)
+- [x] 1.1 Linting passes: `npm run lint` — b3b89df
+- [x] 1.2 Production build passes: `npm run build` — b3b89df
+- [x] 1.3 Type checking passes via lint (type-checked ESLint rules) — b3b89df
 
 #### Manual
 
-- [x] 1.4 Golden scenarios A–B produce documented scorer order
+- [x] 1.4 Golden scenarios A–B produce documented scorer order — b3b89df
 
 ### Phase 2: Recommendations service, API, and middleware
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Production build passes: `npm run build`
-- [ ] 2.3 Type checking passes via lint (type-checked ESLint rules)
+- [x] 2.1 Linting passes: `npm run lint`
+- [x] 2.2 Production build passes: `npm run build`
+- [x] 2.3 Type checking passes via lint (type-checked ESLint rules)
 
 #### Manual
 
-- [ ] 2.4 API returns eligible false when < 3 tagged library items
-- [ ] 2.5 API returns ranked items when eligible; 401 when unauthenticated
+- [x] 2.4 API returns eligible false when < 3 tagged library items
+- [x] 2.5 API returns ranked items when eligible; 401 when unauthenticated
 
 ### Phase 3: Library UI recommendations section
 

@@ -33,7 +33,7 @@ Kolekcjoner mediów fizycznych nie ma jednego miejsca łączącego posiadane poz
 | S-01 | admin-catalog-approval | admin can manually create or edit catalog items and approve them so approved items appear in the user-facing catalog | F-01 | FR-001, FR-004, FR-006 | in-progress |
 | S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | done |
 | S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | planning |
-| S-04 | tag-recommendations | receive item recommendations based on tags or description of items in their library | S-02 | FR-007 | planning |
+| S-04 | tag-recommendations | receive item recommendations based on tags or description of items in their library | S-02 | FR-007 | in-progress |
 | S-05 | readonly-share-link | generate a read-only share link exposing library and wishlist without edit rights; recipient views without editing | S-02 | FR-008 | proposed |
 | S-06 | ui-polish | improve visual consistency and usability of admin and collector surfaces built in earlier slices | S-01 | — | proposed |
 
@@ -125,7 +125,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Simple tag/description overlap only (not a custom engine per PRD Non-Goals); sequenced after library has items to recommend against.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-05: Read-only share link
 

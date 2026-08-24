@@ -24,12 +24,12 @@ F-01 and S-01 are complete. The data layer supports assignments; the app layer d
 After this plan completes:
 
 1. User opens `/catalog`, enters a search query, and sees only **approved** items matching title, description, or tags.
-2. User assigns an item to library or wishlist from catalog; if already assigned, can move between lists or remove.
-3. User opens `/library` and `/wishlist` and sees assigned items with title, description, and tags; can move or remove from each page.
+2. User assigns an item to library or wishlist from catalog; if already on wishlist, can move to library or remove. **Library items cannot be moved to wishlist** (remove still allowed).
+3. User opens `/library` and `/wishlist` and sees assigned items with title, description, and tags; can move wishlist→library or remove; library rows offer Remove only (no demote to wishlist).
 4. Unauthenticated access to `/catalog`, `/library`, `/wishlist`, and `/api/assignments` is blocked (HTML redirect or JSON 401).
 5. Assigning a non-approved catalog item fails cleanly (RLS → 403).
 
-**Verification:** lint + build pass; human walks search → assign → view library → move to wishlist → remove.
+**Verification:** lint + build pass; human walks search → assign → view library → confirm library→wishlist blocked → remove; wishlist→library still works.
 
 ## What We're NOT Doing
 
@@ -44,7 +44,7 @@ After this plan completes:
 
 Four phases: assignment contract first (service + API), then catalog search + assign UI, then collection pages + nav, then integration verification. Search stays SSR; interactive assign/move/remove uses React islands + fetch, mirroring S-01 admin list pattern.
 
-Queries use session client + RLS. Assignment POST implements upsert semantics: insert new row, or on unique violation update `list_type`.
+Queries use session client + RLS. Assignment POST implements upsert semantics: insert new row, or on unique violation update `list_type` **except** when the existing row is `library` and the requested type is `wishlist` (forbidden — library is terminal for list-type).
 
 ## Critical Implementation Details
 
@@ -307,9 +307,59 @@ End-to-end validation, documentation touch-ups, and cap reminder — no new feat
 
 #### Manual Verification:
 
-- Full flow: admin-approved item → user searches → assigns to library → views library → moves to wishlist → removes
+- Full flow: admin-approved item → user searches → assigns to library → views library → remove (library→wishlist move is covered in Phase 5)
 - Second user cannot see first user's assignments (RLS isolation)
 - Sign-out blocks access to catalog, library, wishlist
+
+---
+
+## Phase 5: Library list-type lock
+
+### Overview
+
+Make library a terminal list-type for moves: once an item is in the library, the user cannot demote it to wishlist. Wishlist → library and remove from library remain allowed. Enforce in the service/API and hide demote controls in the UI.
+
+### Changes Required:
+
+#### 1. Reject library → wishlist in assignment service
+
+**File**: `src/lib/services/assignments.ts`
+
+**Intent**: Prevent demoting an existing library assignment to wishlist via upsert or PATCH.
+
+**Contract**: Before updating `list_type` to `wishlist`, load (or use known) current `list_type`. If current is `library` and target is `wishlist`, throw `AssignmentServiceError` with code `forbidden` and a clear message (e.g. "Cannot move a library item to wishlist"). Apply in both the unique-violation upsert path of `assign` and in `updateListType`. Wishlist → library and remove are unchanged.
+
+#### 2. Surface forbidden demote on JSON API
+
+**Files**: `src/pages/api/assignments.ts`, `src/pages/api/assignments/[id].ts`
+
+**Intent**: Return a client-visible error when the service rejects library → wishlist.
+
+**Contract**: Existing `AssignmentServiceError` → HTTP mapping already treats `forbidden` as 403. Confirm POST upsert and PATCH both return 403 JSON `{ "error": "..." }` for this case (no new status codes required).
+
+#### 3. Hide demote controls on catalog and library UIs
+
+**Files**: `src/components/catalog/CatalogItemActions.tsx`, `src/components/collection/CollectionItemActions.tsx`
+
+**Intent**: Do not offer “Move to wishlist” when the item is already in library.
+
+**Contract**: When `listType === "library"`, omit the move button; keep Badge + Remove. When `listType === "wishlist"`, keep “Move to library”. Unassigned catalog rows still show both Add to library / Add to wishlist.
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- Linting passes: `npm run lint`
+- Production build passes: `npm run build`
+
+#### Manual Verification:
+
+- Library item on `/catalog` and `/library` has no “Move to wishlist” control
+- Authenticated POST/PATCH attempting library → wishlist returns 403 JSON
+- Wishlist → library still works from catalog and `/wishlist`
+- Remove from library still works; item can later be re-added to wishlist
+
+**Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
 ---
 
@@ -329,10 +379,11 @@ End-to-end validation, documentation touch-ups, and cap reminder — no new feat
 1. Seed at least two approved catalog items with distinct titles/tags (via admin UI).
 2. Sign in as user A; search `/catalog?q=<tag>` — verify filter works.
 3. Assign item to library; confirm on `/library`.
-4. Move to wishlist from library page; confirm on `/wishlist`.
-5. Remove from wishlist; confirm gone from both pages.
-6. Sign in as user B; confirm user A's collections are not visible.
-7. Attempt assign to pending item via API — expect 403.
+4. Confirm no “Move to wishlist” on library item; API demote returns 403.
+5. Assign another item to wishlist; move to library; confirm on `/library`.
+6. Remove from library; confirm gone; optionally re-add to wishlist.
+7. Sign in as user B; confirm user A's collections are not visible.
+8. Attempt assign to pending item via API — expect 403.
 
 ## Performance Considerations
 
@@ -359,51 +410,64 @@ No database migrations required. Existing RLS and UNIQUE constraint support all 
 
 #### Automated
 
-- [ ] 1.1 Linting passes: `npm run lint`
-- [ ] 1.2 Production build passes: `npm run build`
-- [ ] 1.3 Type checking passes via lint (type-checked ESLint rules)
+- [x] 1.1 Linting passes: `npm run lint` — e0e06ec
+- [x] 1.2 Production build passes: `npm run build` — e0e06ec
+- [x] 1.3 Type checking passes via lint (type-checked ESLint rules) — e0e06ec
 
 #### Manual
 
-- [ ] 1.4 Authenticated GET/POST assignment API works; upsert move on duplicate
-- [ ] 1.5 Unauthenticated assignment API returns 401 JSON
-- [ ] 1.6 Assign to pending/rejected item returns 403
+- [x] 1.4 Authenticated GET/POST assignment API works; upsert move on duplicate — e0e06ec
+- [x] 1.5 Unauthenticated assignment API returns 401 JSON — e0e06ec
+- [x] 1.6 Assign to pending/rejected item returns 403 — e0e06ec
 
 ### Phase 2: Catalog search and assign UI
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Production build passes: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint` — b9120a4
+- [x] 2.2 Production build passes: `npm run build` — b9120a4
 
 #### Manual
 
-- [ ] 2.3 SSR search via `?q=` filters approved items
-- [ ] 2.4 Assign, move, and remove from catalog page work
-- [ ] 2.5 Pending items never appear in search
+- [x] 2.3 SSR search via `?q=` filters approved items — b9120a4
+- [x] 2.4 Assign, move, and remove from catalog page work — b9120a4
+- [x] 2.5 Pending items never appear in search — b9120a4
 
 ### Phase 3: Library and wishlist pages
 
 #### Automated
 
-- [ ] 3.1 Linting passes: `npm run lint`
-- [ ] 3.2 Production build passes: `npm run build`
+- [x] 3.1 Linting passes: `npm run lint` — 4113691
+- [x] 3.2 Production build passes: `npm run build` — 4113691
 
 #### Manual
 
-- [ ] 3.3 Library and wishlist pages show assigned items with metadata
-- [ ] 3.4 Move and remove work from collection pages
-- [ ] 3.5 Topbar links navigate correctly
+- [x] 3.3 Library and wishlist pages show assigned items with metadata — 4113691
+- [x] 3.4 Move and remove work from collection pages — 4113691
+- [x] 3.5 Topbar links navigate correctly — 4113691
 
 ### Phase 4: Integration verification
 
 #### Automated
 
-- [ ] 4.1 Linting passes: `npm run lint`
-- [ ] 4.2 Production build passes: `npm run build`
+- [x] 4.1 Linting passes: `npm run lint`
+- [x] 4.2 Production build passes: `npm run build`
 
 #### Manual
 
 - [ ] 4.3 Full US-01 / FR-002 / FR-003 flow verified end-to-end
 - [ ] 4.4 RLS isolation between users confirmed
 - [ ] 4.5 Unauthenticated access blocked on all collector routes
+
+### Phase 5: Library list-type lock
+
+#### Automated
+
+- [x] 5.1 Linting passes: `npm run lint` — 4e79fd1
+- [x] 5.2 Production build passes: `npm run build` — 4e79fd1
+
+#### Manual
+
+- [x] 5.3 Library items show no Move to wishlist on catalog and library pages — 4e79fd1
+- [x] 5.4 API rejects library → wishlist with 403 — 4e79fd1
+- [x] 5.5 Wishlist → library and remove from library still work — 4e79fd1

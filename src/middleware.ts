@@ -1,7 +1,7 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
 
-const PROTECTED_ROUTES = ["/dashboard", "/catalog", "/admin"];
+const PROTECTED_ROUTES = ["/dashboard", "/catalog", "/admin", "/library", "/wishlist"];
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
 function jsonError(status: number, error: string) {
@@ -10,6 +10,10 @@ function jsonError(status: number, error: string) {
 
 function isApiAdmin(pathname: string) {
   return pathname === "/api/admin" || pathname.startsWith("/api/admin/");
+}
+
+function isApiAssignments(pathname: string) {
+  return pathname === "/api/assignments" || pathname.startsWith("/api/assignments/");
 }
 
 function isAdminPage(pathname: string) {
@@ -65,6 +69,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
     if (!isAdmin) {
       return jsonError(403, "Forbidden");
+    }
+    return next();
+  }
+
+  if (isApiAssignments(pathname)) {
+    if (!context.locals.user) {
+      return jsonError(401, "Unauthorized");
     }
     return next();
   }

@@ -1,0 +1,86 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import CollectionItemActions from "@/components/collection/CollectionItemActions";
+import { createClient } from "@/lib/supabase";
+import { listForUser } from "@/lib/services/assignments";
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+let configError = false;
+let assignments = [] as Awaited<ReturnType<typeof listForUser>>;
+
+if (!supabase) {
+  configError = true;
+  Astro.response.status = 500;
+} else {
+  assignments = await listForUser(supabase, "library");
+}
+---
+
+{
+  configError ? (
+    <Layout title="Configuration error">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-8 text-zinc-100">
+        <h1 class="text-xl font-semibold">Supabase is not configured</h1>
+      </main>
+    </Layout>
+  ) : (
+    <Layout title="Library">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
+        <div class="mx-auto max-w-3xl">
+          <h1 class="text-2xl font-semibold tracking-tight">Library</h1>
+          <p class="mt-1 text-sm text-zinc-400">Items you own or have finished.</p>
+
+          {assignments.length === 0 ? (
+            <p class="mt-10 text-sm text-zinc-400">
+              Your library is empty. Browse the{" "}
+              <a href="/catalog" class="text-zinc-200 underline hover:text-white">
+                catalog
+              </a>{" "}
+              to add items.
+            </p>
+          ) : (
+            <ul class="mt-8 space-y-6">
+              {assignments.map((assignment) => {
+                const item = assignment.catalog_item;
+                const unavailable = item == null;
+                return (
+                  <li class="border-b border-zinc-800 pb-6 last:border-b-0">
+                    {unavailable ? (
+                      <>
+                        <p class="text-sm text-zinc-400">This item is no longer available in the catalog.</p>
+                        <CollectionItemActions
+                          client:only="react"
+                          assignmentId={assignment.id}
+                          catalogItemId={assignment.catalog_item_id}
+                          listType="library"
+                          unavailable
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <h2 class="text-lg font-medium text-zinc-50">{item.title}</h2>
+                        {item.description ? (
+                          <p class="mt-2 text-sm leading-relaxed text-zinc-300">{item.description}</p>
+                        ) : null}
+                        {item.tags.length > 0 ? (
+                          <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">{item.tags.join(" · ")}</p>
+                        ) : null}
+                        <CollectionItemActions
+                          client:only="react"
+                          assignmentId={assignment.id}
+                          catalogItemId={assignment.catalog_item_id}
+                          listType="library"
+                        />
+                      </>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      </main>
+    </Layout>
+  )
+}

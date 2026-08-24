@@ -51,13 +51,52 @@ function mapPostgrestError(error: { code?: string; message: string }): CatalogSe
   return new CatalogServiceError("unknown", error.message, error);
 }
 
-/** Lists up to PostgREST max_rows (default 1000); excess rows are truncated silently. */
-export async function listApproved(client: SupabaseClient): Promise<CatalogItem[]> {
-  const { data, error } = await client
+/** Escape `%` and `_` for safe use inside SQL ILIKE patterns. */
+function escapeIlikePattern(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+}
+
+/** Quote a PostgREST filter value (commas/parens in user input). */
+function quotePostgrestValue(value: string): string {
+  return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+}
+
+/**
+ * Build `tags.cs.{tag}` for exact tag-element match (case-sensitive).
+ * Commas and parentheses in `tag` are escaped via quoted array literal syntax.
+ */
+function formatTagCsFilter(tag: string): string {
+  if (/[(),\s]/.test(tag)) {
+    return `tags.cs.{${quotePostgrestValue(tag)}}`;
+  }
+  const escaped = tag.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  return `tags.cs.{${escaped}}`;
+}
+
+/**
+ * Lists approved catalog items, optionally filtered by search query.
+ *
+ * Search matches title/description (ILIKE substring) OR an exact tag element via `tags.cs.{query}`
+ * (case-sensitive — not substring tag search). Empty/blank query returns the full approved list.
+ *
+ * Lists up to PostgREST max_rows (default 1000); excess rows are truncated silently.
+ */
+export async function listApproved(client: SupabaseClient, query?: string): Promise<CatalogItem[]> {
+  const trimmed = query?.trim() ?? "";
+
+  let dbQuery = client
     .from("catalog_items")
     .select("id, title, description, tags, status, created_at, updated_at")
     .eq("status", "approved")
     .order("updated_at", { ascending: false });
+
+  if (trimmed.length > 0) {
+    const ilikePattern = quotePostgrestValue(`%${escapeIlikePattern(trimmed)}%`);
+    const tagFilter = formatTagCsFilter(trimmed);
+    dbQuery = dbQuery.or(`title.ilike.${ilikePattern},description.ilike.${ilikePattern},${tagFilter}`);
+  }
+
+  const { data, error } = await dbQuery;
 
   if (error) {
     throw mapPostgrestError(error);

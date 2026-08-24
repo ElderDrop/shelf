@@ -463,11 +463,11 @@ No database migrations required. Existing RLS and UNIQUE constraint support all 
 
 #### Automated
 
-- [x] 5.1 Linting passes: `npm run lint`
-- [x] 5.2 Production build passes: `npm run build`
+- [x] 5.1 Linting passes: `npm run lint` — 4e79fd1
+- [x] 5.2 Production build passes: `npm run build` — 4e79fd1
 
 #### Manual
 
-- [x] 5.3 Library items show no Move to wishlist on catalog and library pages
-- [x] 5.4 API rejects library → wishlist with 403
-- [x] 5.5 Wishlist → library and remove from library still work
+- [x] 5.3 Library items show no Move to wishlist on catalog and library pages — 4e79fd1
+- [x] 5.4 API rejects library → wishlist with 403 — 4e79fd1
+- [x] 5.5 Wishlist → library and remove from library still work — 4e79fd1

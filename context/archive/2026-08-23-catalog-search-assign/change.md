@@ -1,10 +1,10 @@
 ---
 change_id: catalog-search-assign
 title: Catalog search, assign, and library view
-status: plan_reviewed
+status: archived
 created: 2026-08-23
-updated: 2026-08-23
-archived_at: null
+updated: 2026-08-24
+archived_at: 2026-08-24T20:24:25Z
 ---
 
 ## Notes

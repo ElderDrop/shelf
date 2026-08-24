@@ -1,19 +1,22 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import CatalogItemActions from "@/components/catalog/CatalogItemActions";
 import CollectionItemActions from "@/components/collection/CollectionItemActions";
 import { createClient } from "@/lib/supabase";
 import { listForUser } from "@/lib/services/assignments";
+import { recommendForUser } from "@/lib/services/recommendations";
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 
 let configError = false;
 let assignments = [] as Awaited<ReturnType<typeof listForUser>>;
+let recommendations = null as Awaited<ReturnType<typeof recommendForUser>> | null;
 
 if (!supabase) {
   configError = true;
   Astro.response.status = 500;
 } else {
-  assignments = await listForUser(supabase, "library");
+  [assignments, recommendations] = await Promise.all([listForUser(supabase, "library"), recommendForUser(supabase)]);
 }
 ---
 
@@ -30,6 +33,41 @@ if (!supabase) {
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Library</h1>
           <p class="mt-1 text-sm text-zinc-400">Items you own or have finished.</p>
+
+          {recommendations && !recommendations.eligible ? (
+            <section class="mt-8 rounded-md border border-zinc-800 bg-zinc-900/40 p-4">
+              <h2 class="text-sm font-medium text-zinc-200">Recommended for you</h2>
+              <p class="mt-2 text-sm text-zinc-400">
+                Recommendations unlock after you have at least 3 library items with tags. You have{" "}
+                {recommendations.taggedLibraryCount} tagged{" "}
+                {recommendations.taggedLibraryCount === 1 ? "item" : "items"} in your library.
+              </p>
+            </section>
+          ) : null}
+
+          {recommendations?.eligible ? (
+            <section class="mt-8">
+              <h2 class="text-lg font-medium text-zinc-50">Recommended for you</h2>
+              {recommendations.items.length === 0 ? (
+                <p class="mt-2 text-sm text-zinc-400">No recommendations match your library yet.</p>
+              ) : (
+                <ul class="mt-4 space-y-6">
+                  {recommendations.items.map(({ candidate }) => (
+                    <li class="border-b border-zinc-800 pb-6 last:border-b-0">
+                      <h3 class="text-base font-medium text-zinc-50">{candidate.title}</h3>
+                      {candidate.description ? (
+                        <p class="mt-2 text-sm leading-relaxed text-zinc-300">{candidate.description}</p>
+                      ) : null}
+                      {candidate.tags.length > 0 ? (
+                        <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">{candidate.tags.join(" · ")}</p>
+                      ) : null}
+                      <CatalogItemActions client:only="react" catalogItemId={candidate.id} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ) : null}
 
           {assignments.length === 0 ? (
             <p class="mt-10 text-sm text-zinc-400">

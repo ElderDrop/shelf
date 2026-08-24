@@ -340,27 +340,27 @@ No database migrations required. Uses existing `catalog_items.tags`, `descriptio
 
 #### Automated
 
-- [x] 2.1 Linting passes: `npm run lint`
-- [x] 2.2 Production build passes: `npm run build`
-- [x] 2.3 Type checking passes via lint (type-checked ESLint rules)
+- [x] 2.1 Linting passes: `npm run lint` — fde62de
+- [x] 2.2 Production build passes: `npm run build` — fde62de
+- [x] 2.3 Type checking passes via lint (type-checked ESLint rules) — fde62de
 
 #### Manual
 
-- [x] 2.4 API returns eligible false when < 3 tagged library items
-- [x] 2.5 API returns ranked items when eligible; 401 when unauthenticated
+- [x] 2.4 API returns eligible false when < 3 tagged library items — fde62de
+- [x] 2.5 API returns ranked items when eligible; 401 when unauthenticated — fde62de
 
 ### Phase 3: Library UI recommendations section
 
 #### Automated
 
-- [ ] 3.1 Linting passes: `npm run lint`
-- [ ] 3.2 Production build passes: `npm run build`
+- [x] 3.1 Linting passes: `npm run lint`
+- [x] 3.2 Production build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Gate copy shown when < 3 tagged library items
-- [ ] 3.4 Recommendations list with assign actions when eligible
-- [ ] 3.5 Library and wishlist items excluded from recommendations
+- [x] 3.3 Gate copy shown when < 3 tagged library items
+- [x] 3.4 Recommendations list with assign actions when eligible
+- [x] 3.5 Library and wishlist items excluded from recommendations
 
 ### Phase 4: Integration and golden verification
 

@@ -11,12 +11,20 @@ const supabase = createClient(Astro.request.headers, Astro.cookies);
 let configError = false;
 let assignments = [] as Awaited<ReturnType<typeof listForUser>>;
 let recommendations = null as Awaited<ReturnType<typeof recommendForUser>> | null;
+let recommendationsUnavailable = false;
 
 if (!supabase) {
   configError = true;
   Astro.response.status = 500;
 } else {
-  [assignments, recommendations] = await Promise.all([listForUser(supabase, "library"), recommendForUser(supabase)]);
+  const allAssignments = await listForUser(supabase);
+  assignments = allAssignments.filter((row) => row.list_type === "library");
+  try {
+    recommendations = await recommendForUser(supabase, { assignments: allAssignments });
+  } catch (error) {
+    console.error("recommendations failed:", error instanceof Error ? error.message : error);
+    recommendationsUnavailable = true;
+  }
 }
 ---
 
@@ -33,6 +41,13 @@ if (!supabase) {
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Library</h1>
           <p class="mt-1 text-sm text-zinc-400">Items you own or have finished.</p>
+
+          {recommendationsUnavailable ? (
+            <section class="mt-8 rounded-md border border-zinc-800 bg-zinc-900/40 p-4">
+              <h2 class="text-sm font-medium text-zinc-200">Recommended for you</h2>
+              <p class="mt-2 text-sm text-zinc-400">Recommendations are temporarily unavailable.</p>
+            </section>
+          ) : null}
 
           {recommendations && !recommendations.eligible ? (
             <section class="mt-8 rounded-md border border-zinc-800 bg-zinc-900/40 p-4">

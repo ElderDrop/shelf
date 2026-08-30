@@ -127,14 +127,15 @@ Introduce the recommendations service that assembles seed/candidates/exclusions 
 
 - Export `RecommendationResult` type: `{ eligible: boolean; taggedLibraryCount: number; items: ScoredRecommendation[] }` where `eligible = taggedLibraryCount >= 3`.
 - Export `RecommendationsServiceError` mirroring catalog/assignment error pattern (`unknown` code sufficient).
-- Export `recommendForUser(client): Promise<RecommendationResult>`:
-  1. `listForUser(client)` — single call; build assigned `catalog_item_id` set from all rows (library + wishlist).
+- Export `recommendForUser(client, options?): Promise<RecommendationResult>`:
+  1. Use `options.assignments` when provided; otherwise `listForUser(client)` once — build assigned `catalog_item_id` set from all rows (library + wishlist).
   2. Filter rows to `list_type === "library"`; map embedded `catalog_item` to seed shape (skip null embeds).
   3. Compute `taggedLibraryCount` via scorer helper; if `< 3`, return `{ eligible: false, taggedLibraryCount, items: [] }`.
   4. `listApproved(client)` — candidate pool.
   5. Filter candidates: not in assigned id set.
   6. `rankCandidates(filtered, buildLibraryTagSet(seeds))`.
   7. Return `{ eligible: true, taggedLibraryCount, items }`.
+- `/library` SSR should pass the shared assignments array so it does not double-fetch `listForUser`.
 - JSDoc: documents PostgREST 1000-row silent truncation on `listApproved`.
 
 #### 2. Recommendations JSON API
@@ -191,7 +192,7 @@ Add SSR recommendations block to `/library` with gate copy, ranked list, and S-0
 - When `eligible === false`: render gate section with copy explaining recommendations unlock after **3 library items with tags**; show current count if helpful (`You have N tagged items in your library.`). Do not render recommendation rows.
 - When `eligible === true` and `items.length === 0`: render section heading + copy `No recommendations match your library yet.`
 - When `eligible === true` and `items.length > 0`: render “Recommended for you” heading + list (title, description, tags, score optional for dev-only — omit in production UI).
-- For each recommendation row, hydrate `CatalogItemActions` island (`client:load`) with `catalogItemId` and no current `listType` (unassigned by definition). Reuse S-02 component from `src/components/catalog/CatalogItemActions.tsx`.
+- For each recommendation row, hydrate `CatalogItemActions` island (`client:only="react"`) with `catalogItemId` and no current `listType` (unassigned by definition). Reuse S-02 component from `src/components/catalog/CatalogItemActions.tsx`.
 - Match existing zinc palette / list spacing from `/catalog` and S-02 library list.
 
 #### 2. Assignment state bootstrap for recommendations (if needed)

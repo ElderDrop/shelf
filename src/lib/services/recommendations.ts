@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { listApproved } from "@/lib/services/catalog";
-import { listForUser } from "@/lib/services/assignments";
+import { listForUser, type AssignmentWithItem } from "@/lib/services/assignments";
 import {
   buildLibraryTagSet,
   countTaggedLibraryItems,
@@ -29,6 +29,11 @@ export interface RecommendationResult {
   items: ScoredRecommendation[];
 }
 
+export interface RecommendForUserOptions {
+  /** When provided (e.g. from /library SSR), skips a second listForUser round-trip. Must include library + wishlist for exclusions. */
+  assignments?: AssignmentWithItem[];
+}
+
 function mapAssignmentToSeed(
   catalogItemId: string,
   catalogItem: { title: string; description: string | null; tags: string[] } | null,
@@ -45,8 +50,11 @@ function mapAssignmentToSeed(
 }
 
 /** Uses listApproved (≤ PostgREST max_rows, default 1000); excess catalog rows are truncated silently. */
-export async function recommendForUser(client: SupabaseClient): Promise<RecommendationResult> {
-  const assignments = await listForUser(client);
+export async function recommendForUser(
+  client: SupabaseClient,
+  options: RecommendForUserOptions = {},
+): Promise<RecommendationResult> {
+  const assignments = options.assignments ?? (await listForUser(client));
 
   const assignedCatalogItemIds = new Set(assignments.map((row) => row.catalog_item_id));
 

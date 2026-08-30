@@ -3,7 +3,7 @@ project: Shelf
 version: 1
 status: draft
 created: 2026-06-07
-updated: 2026-08-24
+updated: 2026-08-30
 prd_version: 1
 main_goal: speed
 top_blocker: time

@@ -168,7 +168,7 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 | Route            | Who can access                          | Description                                                             |
 | ---------------- | --------------------------------------- | ----------------------------------------------------------------------- |
 | `/catalog`       | Signed-in users                         | Search and browse approved catalog items; assign to library or wishlist |
-| `/library`       | Signed-in users                         | View and manage items assigned to your library                          |
+| `/library`       | Signed-in users                         | View and manage items assigned to your library; see tag-based recommendations when eligible |
 | `/wishlist`      | Signed-in users                         | View and manage items on your wishlist                                  |
 | `/admin/catalog` | Admins only (`profiles.role = 'admin'`) | Create, edit, approve, and reject catalog items                         |
 | `/403`           | Anyone                                  | Forbidden page (also rewritten for non-admin `/admin` visits)           |
@@ -182,7 +182,15 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 | `PATCH /api/assignments/[id]`  | Signed-in users | Move assignment to the other list                               |
 | `DELETE /api/assignments/[id]` | Signed-in users | Remove assignment from your collection                          |
 
-**List cap:** `/catalog`, `/library`, `/wishlist`, and `/admin/catalog` load all matching rows up to PostgREST `max_rows` (default **1000**). Beyond that, results are truncated silently — no pagination yet (follow-up: S-06).
+### Recommendations
+
+| Route                      | Who can access  | Description                                                                 |
+| -------------------------- | --------------- | --------------------------------------------------------------------------- |
+| `GET /api/recommendations` | Signed-in users | Ranked catalog suggestions based on your library tags/descriptions (JSON) |
+
+**Recommendations on `/library`:** Shown when you have **≥ 3 library items with at least one tag**. Ranks up to **10** approved catalog items you have not assigned (library or wishlist excluded). Seed data comes from your **library only** — not wishlist. Scoring uses tag overlap plus a light title/description substring boost from your library tags.
+
+**List cap:** `/catalog`, `/library`, `/wishlist`, and `/admin/catalog` load all matching rows up to PostgREST `max_rows` (default **1000**). Beyond that, results are truncated silently — no pagination yet (follow-up: S-06). Recommendations rank within the approved catalog rows returned by `listApproved` (same cap).
 
 Promote the first admin with the SQL in [First admin](#first-admin) above.
 

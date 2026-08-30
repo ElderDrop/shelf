@@ -353,24 +353,24 @@ No database migrations required. Uses existing `catalog_items.tags`, `descriptio
 
 #### Automated
 
-- [x] 3.1 Linting passes: `npm run lint`
-- [x] 3.2 Production build passes: `npm run build`
+- [x] 3.1 Linting passes: `npm run lint` — b615eaa
+- [x] 3.2 Production build passes: `npm run build` — b615eaa
 
 #### Manual
 
-- [x] 3.3 Gate copy shown when < 3 tagged library items
-- [x] 3.4 Recommendations list with assign actions when eligible
-- [x] 3.5 Library and wishlist items excluded from recommendations
+- [x] 3.3 Gate copy shown when < 3 tagged library items — b615eaa
+- [x] 3.4 Recommendations list with assign actions when eligible — b615eaa
+- [x] 3.5 Library and wishlist items excluded from recommendations — b615eaa
 
 ### Phase 4: Integration and golden verification
 
 #### Automated
 
-- [ ] 4.1 Linting passes: `npm run lint`
-- [ ] 4.2 Production build passes: `npm run build`
+- [x] 4.1 Linting passes: `npm run lint`
+- [x] 4.2 Production build passes: `npm run build`
 
 #### Manual
 
-- [ ] 4.3 End-to-end assign-from-recommendation flow verified
-- [ ] 4.4 RLS isolation between users confirmed
-- [ ] 4.5 Golden scenario C exclusions verified
+- [x] 4.3 End-to-end assign-from-recommendation flow verified
+- [x] 4.4 RLS isolation between users confirmed
+- [x] 4.5 Golden scenario C exclusions verified

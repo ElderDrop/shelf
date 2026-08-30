@@ -366,11 +366,11 @@ No database migrations required. Uses existing `catalog_items.tags`, `descriptio
 
 #### Automated
 
-- [x] 4.1 Linting passes: `npm run lint`
-- [x] 4.2 Production build passes: `npm run build`
+- [x] 4.1 Linting passes: `npm run lint` — a0cc6f6
+- [x] 4.2 Production build passes: `npm run build` — a0cc6f6
 
 #### Manual
 
-- [x] 4.3 End-to-end assign-from-recommendation flow verified
-- [x] 4.4 RLS isolation between users confirmed
-- [x] 4.5 Golden scenario C exclusions verified
+- [x] 4.3 End-to-end assign-from-recommendation flow verified — a0cc6f6
+- [x] 4.4 RLS isolation between users confirmed — a0cc6f6
+- [x] 4.5 Golden scenario C exclusions verified — a0cc6f6

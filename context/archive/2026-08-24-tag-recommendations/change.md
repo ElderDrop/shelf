@@ -1,10 +1,10 @@
 ---
 change_id: tag-recommendations
 title: Tag and description recommendations
-status: impl_reviewed
+status: archived
 created: 2026-08-24
 updated: 2026-08-30
-archived_at: null
+archived_at: 2026-08-30T18:59:41Z
 ---
 
 ## Notes

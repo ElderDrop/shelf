@@ -255,27 +255,27 @@ N/A — no schema changes. First introduction of Vitest may require `npm install
 
 #### Automated
 
-- [x] 1.1 `npm test` exits 0 with ≥1 passing test
-- [x] 1.2 `npm run lint` passes on new config/scripts files
-- [x] 1.3 `@/` imports resolve inside a Vitest file
+- [x] 1.1 `npm test` exits 0 with ≥1 passing test — b2a534a
+- [x] 1.2 `npm run lint` passes on new config/scripts files — b2a534a
+- [x] 1.3 `@/` imports resolve inside a Vitest file — b2a534a
 
 #### Manual
 
-- [x] 1.4 `npm run test:watch` spot-check once
+- [x] 1.4 `npm run test:watch` spot-check once — b2a534a
 
 ### Phase 2: Pending-visibility signals
 
 #### Automated
 
-- [ ] 2.1 Empty-query `listApproved` records `.eq("status", "approved")`
-- [ ] 2.2 Search-path `listApproved` still records `.eq("status", "approved")`
-- [ ] 2.3 Shared `requireAdmin` returns 403 for non-admin without Supabase/`astro:env`
-- [ ] 2.4 Both admin catalog API modules use the shared helper
-- [ ] 2.5 Temporary drop of `.eq` fails the unit test (verified once, then restored)
+- [x] 2.1 Empty-query `listApproved` records `.eq("status", "approved")`
+- [x] 2.2 Search-path `listApproved` still records `.eq("status", "approved")`
+- [x] 2.3 Shared `requireAdmin` returns 403 for non-admin without Supabase/`astro:env`
+- [x] 2.4 Both admin catalog API modules use the shared helper
+- [x] 2.5 Temporary drop of `.eq` fails the unit test (verified once, then restored)
 
 #### Manual
 
-- [ ] 2.6 Test names clearly describe pending-visibility protection
+- [x] 2.6 Test names clearly describe pending-visibility protection
 
 ### Phase 3: CI + cookbook handoff
 

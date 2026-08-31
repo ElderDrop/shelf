@@ -1,18 +1,12 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 import { jsonError, jsonOk } from "@/lib/api-response";
+import { requireAdmin } from "@/lib/require-admin";
 import { catalogCreateSchema, catalogStatusFilterSchema } from "@/lib/schemas/catalog";
 import { CatalogServiceError, create, listAll } from "@/lib/services/catalog";
 import { ZodError } from "zod";
 
 export const prerender = false;
-
-function requireAdmin(context: Parameters<APIRoute>[0]) {
-  if (context.locals.profile?.role !== "admin") {
-    return jsonError(403, "Forbidden");
-  }
-  return null;
-}
 
 function zodDetails(error: ZodError) {
   return error.issues.map((issue) => ({

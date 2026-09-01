@@ -267,25 +267,25 @@ N/A — no schema changes. First introduction of Vitest may require `npm install
 
 #### Automated
 
-- [x] 2.1 Empty-query `listApproved` records `.eq("status", "approved")`
-- [x] 2.2 Search-path `listApproved` still records `.eq("status", "approved")`
-- [x] 2.3 Shared `requireAdmin` returns 403 for non-admin without Supabase/`astro:env`
-- [x] 2.4 Both admin catalog API modules use the shared helper
-- [x] 2.5 Temporary drop of `.eq` fails the unit test (verified once, then restored)
+- [x] 2.1 Empty-query `listApproved` records `.eq("status", "approved")` — f73d181
+- [x] 2.2 Search-path `listApproved` still records `.eq("status", "approved")` — f73d181
+- [x] 2.3 Shared `requireAdmin` returns 403 for non-admin without Supabase/`astro:env` — f73d181
+- [x] 2.4 Both admin catalog API modules use the shared helper — f73d181
+- [x] 2.5 Temporary drop of `.eq` fails the unit test (verified once, then restored) — f73d181
 
 #### Manual
 
-- [x] 2.6 Test names clearly describe pending-visibility protection
+- [x] 2.6 Test names clearly describe pending-visibility protection — f73d181
 
 ### Phase 3: CI + cookbook handoff
 
 #### Automated
 
-- [ ] 3.1 `ci.yml` runs `npm test` after lint
-- [ ] 3.2 `npm test`, `npm run lint`, and `npm run build` pass
-- [ ] 3.3 test-plan §6.1 and §6.4 document shipped patterns (not TBD-only)
+- [x] 3.1 `ci.yml` runs `npm test` after lint
+- [x] 3.2 `npm test`, `npm run lint`, and `npm run build` pass
+- [x] 3.3 test-plan §6.1 and §6.4 document shipped patterns (not TBD-only)
 
 #### Manual
 
-- [ ] 3.4 AGENTS.md matches how tests are run
-- [ ] 3.5 §6.6 notes Risk #2 deferred; §2 risk map untouched
+- [x] 3.4 AGENTS.md matches how tests are run
+- [x] 3.5 §6.6 notes Risk #2 deferred; §2 risk map untouched

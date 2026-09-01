@@ -25,10 +25,9 @@
 - `npm run build` / `npm run preview` — production build and preview.
 - `npm run lint` / `npm run lint:fix` — ESLint (@eslint.config.js).
 - `npm run format` — Prettier (@.prettierrc.json).
+- `npm test` / `npm run test:watch` — Vitest (Node); files under `src/**/*.{test,spec}.ts` (@vitest.config.ts). Prefer the cheapest layer that catches the risk — see @context/foundation/test-plan.md.
 - `npx supabase start` — local Supabase (Docker); details in @README.md.
 - Husky + lint-staged run on commit per @package.json.
-
-No test runner or `*.test.*` files are present; do not add tests unless the active change introduces a framework.
 
 ## Coding style
 
@@ -39,7 +38,7 @@ No test runner or `*.test.*` files are present; do not add tests unless the acti
 
 ## CI and pull requests
 
-@.github/workflows/ci.yml on push/PR to `master`: `npm ci`, `npx astro sync`, `npm run lint`, `npm run build` (requires `SUPABASE_URL` and `SUPABASE_KEY` GitHub secrets). Commit-message convention is not established yet (repository has no commits).
+@.github/workflows/ci.yml on push/PR to `master`: `npm ci`, `npx astro sync`, `npm run lint`, `npm test`, `npm run build` (requires `SUPABASE_URL` and `SUPABASE_KEY` GitHub secrets for the build step). Commit-message convention is not established yet.
 
 ## Configuration
 

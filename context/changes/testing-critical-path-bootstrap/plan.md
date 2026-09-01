@@ -281,11 +281,11 @@ N/A — no schema changes. First introduction of Vitest may require `npm install
 
 #### Automated
 
-- [x] 3.1 `ci.yml` runs `npm test` after lint
-- [x] 3.2 `npm test`, `npm run lint`, and `npm run build` pass
-- [x] 3.3 test-plan §6.1 and §6.4 document shipped patterns (not TBD-only)
+- [x] 3.1 `ci.yml` runs `npm test` after lint — 3287b04
+- [x] 3.2 `npm test`, `npm run lint`, and `npm run build` pass — 3287b04
+- [x] 3.3 test-plan §6.1 and §6.4 document shipped patterns (not TBD-only) — 3287b04
 
 #### Manual
 
-- [x] 3.4 AGENTS.md matches how tests are run
-- [x] 3.5 §6.6 notes Risk #2 deferred; §2 risk map untouched
+- [x] 3.4 AGENTS.md matches how tests are run — 3287b04
+- [x] 3.5 §6.6 notes Risk #2 deferred; §2 risk map untouched — 3287b04

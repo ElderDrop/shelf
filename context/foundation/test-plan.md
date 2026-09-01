@@ -65,7 +65,7 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Critical-path bootstrap | Bootstrap runner; prove approval-gate visibility and assignment ownership | #1, #2 | runner + integration (+ RLS/SQL if cheapest) | implementing | context/changes/testing-critical-path-bootstrap/ |
+| 1 | Critical-path bootstrap | Bootstrap runner; prove approval-gate visibility and assignment ownership | #1, #2 | runner + integration (+ RLS/SQL if cheapest) | complete | context/changes/testing-critical-path-bootstrap/ |
 | 2 | Authz & assignment rules | Lock admin 403 and library/wishlist business rules | #3, #4 | integration + focused unit | not started | — |
 | 3 | Recommendations fixtures | Golden fixtures for gate, exclusion, and unapproved leak | #6 | unit (+ light integration) | not started | — |
 | 4 | Share-link read-only | Recipient cannot mutate owner data (after S-05) | #5 | contract / thin e2e | not started | — |

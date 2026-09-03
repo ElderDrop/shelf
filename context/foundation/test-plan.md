@@ -65,11 +65,11 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Critical-path bootstrap | Bootstrap runner; prove approval-gate visibility and assignment ownership | #1, #2 | runner + integration (+ RLS/SQL if cheapest) | complete | context/changes/testing-critical-path-bootstrap/ |
-| 2 | Authz & assignment rules | Lock admin 403 and library/wishlist business rules | #3, #4 | integration + focused unit | not started | — |
+| 1 | Critical-path bootstrap | Bootstrap runner; prove non-admin cannot see pending/rejected catalog items | #1 | runner + integration (+ RLS/SQL if cheapest) | complete | context/changes/testing-critical-path-bootstrap/ |
+| 2 | Authz & assignment rules | Lock admin 403 and library/wishlist business rules | #3, #4 | integration + focused unit | implementing | context/changes/testing-authz-assignment-rules/ |
 | 3 | Recommendations fixtures | Golden fixtures for gate, exclusion, and unapproved leak | #6 | unit (+ light integration) | not started | — |
 | 4 | Share-link read-only | Recipient cannot mutate owner data (after S-05) | #5 | contract / thin e2e | not started | — |
-| 5 | Quality-gates wiring | CI runs the suite so the floor cannot silently drop | #1–#4 (lock-in) | CI gate | not started | — |
+| 5 | Quality-gates wiring | Harden test CI beyond early `npm test` gate (wired in Phase 1) | #1–#4 (lock-in) | CI gate | not started | — |
 
 ## 4. Stack
 
@@ -138,7 +138,8 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.6 Per-rollout-phase notes
 
-- **§3 Phase 1 (`testing-critical-path-bootstrap`)**: Shipped Vitest (Node), `listApproved` `.eq("status","approved")` oracle, shared `requireAdmin` 403 unit tests, and `npm test` in CI. **Risk #2 (assignment IDOR) deferred by frame** — still listed on §3 Phase 1 row until `/10x-test-plan --refresh`. Do not treat Phase 2 (#3/#4) as absorbing #2.
+- **§3 Phase 1 (`testing-critical-path-bootstrap`)**: Shipped Vitest (Node), `listApproved` `.eq("status","approved")` oracle, shared `requireAdmin` 403 unit tests, and `npm test` in CI. **Risk #2 (assignment IDOR) deferred by frame** — not in Phase 1 scope; do not treat Phase 2 (#3/#4) as absorbing #2.
+- **§3 Phase 5 (quality-gates wiring)**: `npm test` in CI landed early via Phase 1 change; Phase 5 remains `not started` for any further hardening (coverage thresholds, branch protection docs, etc.).
 
 ## 7. What We Deliberately Don't Test
 

@@ -66,7 +66,7 @@ orchestrator updates Status as artifacts appear on disk.
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
 | 1 | Critical-path bootstrap | Bootstrap runner; prove non-admin cannot see pending/rejected catalog items | #1 | runner + integration (+ RLS/SQL if cheapest) | complete | context/changes/testing-critical-path-bootstrap/ |
-| 2 | Authz & assignment rules | Lock admin 403 and library/wishlist business rules | #3, #4 | integration + focused unit | implementing | context/changes/testing-authz-assignment-rules/ |
+| 2 | Authz & assignment rules | Lock admin 403 and library/wishlist business rules | #3, #4 | integration + focused unit | complete | context/changes/testing-authz-assignment-rules/ |
 | 3 | Recommendations fixtures | Golden fixtures for gate, exclusion, and unapproved leak | #6 | unit (+ light integration) | not started | — |
 | 4 | Share-link read-only | Recipient cannot mutate owner data (after S-05) | #5 | contract / thin e2e | not started | — |
 | 5 | Quality-gates wiring | Harden test CI beyond early `npm test` gate (wired in Phase 1) | #1–#4 (lock-in) | CI gate | not started | — |

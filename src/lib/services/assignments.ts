@@ -88,7 +88,13 @@ function mapPostgrestError(error: { code?: string; message: string }): Assignmen
   return new AssignmentServiceError("unknown", error.message, error);
 }
 
-/** Library is terminal for list-type: demoting to wishlist is forbidden. */
+/**
+ * Library is terminal for list-type: demoting to wishlist is forbidden.
+ *
+ * @internal Test oracle / shared guard for `assign` and `updateListType`.
+ * Not a public authz boundary — callers should use those service entry points,
+ * not this helper alone.
+ */
 export function assertNotLibraryToWishlist(current: ListType, target: ListType): void {
   if (current === "library" && target === "wishlist") {
     throw new AssignmentServiceError("forbidden", "Cannot move a library item to wishlist");

@@ -64,4 +64,4 @@
 - **Location**: src/lib/services/__tests__/supabase-query-mock.ts:41-47
 - **Detail**: Exhausted `results` sequences reuse the last entry. Current assignment tests assert call counts / outcomes tightly enough; catalog default path unchanged. Risk of false green if a future multi-step test under-specifies awaits.
 - **Fix**: Optionally fail when the sequence is exhausted, or document “last repeats” in the mock JSDoc.
-- **Decision**: PENDING
+- **Decision**: FIXED — documented last-repeats on createSupabaseQueryMock JSDoc

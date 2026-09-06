@@ -24,6 +24,10 @@ function isOptions(value: QueryResult | CreateSupabaseQueryMockOptions): value i
 /**
  * Chainable PostgREST-shaped fake for service unit tests.
  * Records method calls; awaiting the builder resolves `{ data, error }`.
+ *
+ * When `results` is provided, each await consumes the next entry; if the
+ * sequence is exhausted, the **last** entry repeats (document under-specified
+ * multi-step tests carefully, or assert call counts).
  */
 export function createSupabaseQueryMock(
   resultOrOptions: QueryResult | CreateSupabaseQueryMockOptions = { data: [], error: null },

@@ -251,15 +251,15 @@ MVP data volume is small (PRD target_scale). `catalog_items(status)` and GIN on 
 
 #### Automated
 
-- [x] 1.1 Migration file exists at `supabase/migrations/20260608120000_catalog_schema.sql`
-- [x] 1.2 `npm run lint` passes
-- [x] 1.3 `npm run build` passes
+- [x] 1.1 Migration file exists at `supabase/migrations/20260608120000_catalog_schema.sql` — 8d42feb
+- [x] 1.2 `npm run lint` passes — 8d42feb
+- [x] 1.3 `npm run build` passes — 8d42feb
 
 #### Manual
 
-- [x] 1.4 `npx supabase db reset` completes without SQL errors
-- [x] 1.5 Table definitions and signup profile trigger verified in psql
-- [x] 1.6 New signup creates a `profiles` row automatically
+- [x] 1.4 `npx supabase db reset` completes without SQL errors — 8d42feb
+- [x] 1.5 Table definitions and signup profile trigger verified in psql — 8d42feb
+- [x] 1.6 New signup creates a `profiles` row automatically — 8d42feb
 
 ### Phase 2: RLS Policies
 

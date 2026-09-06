@@ -21,7 +21,7 @@ Vitest + CI already run. Admin routes call `requireAdmin` then supabase/catalog 
 | -------- | ------ | ---------------- | ------ |
 | #3 prove surface | Handler + fake context (`vi.mock` supabase/catalog) | Locks PATCH denial without workerd; respects `astro:env` import constraint | Plan |
 | #3 mutation breadth | PATCH approve + reject only | Primary status-change failure mode; POST shares same gate | Plan |
-| #4 demotion | Export helper + both call sites | Independent oracle; UI omission is not proof | Research / Plan |
+| #4 demotion | Service-path load-bearing; export optional `@internal` | Independent message oracle without treating helper as public authz | Plan / impl-review |
 | Non-approved assign | Mapping unit only (no RLS CI) | Cheap Node signal; do not claim DB policy coverage | Research / Plan |
 | Risk #2 | Out of scope | Explicit deferral from Phase 1 / §6.6 | Research |
 
@@ -48,7 +48,7 @@ Node Vitest only. Mock route deps → call `PATCH` with fake locals. Assignment 
 
 ## Open Risks & Assumptions
 
-- Handler tests prove route-level `requireAdmin`, not middleware `isApiAdmin` in-process — acceptable per locked decision; dual-gate drift remains documented.
+- Handler tests prove route-level `requireAdmin`, not middleware `isApiAdmin` in-process — acceptable per locked decision; dual-gate drift remains documented. Optional follow-up: middleware-branch unit (see plan NOT Doing).
 - Mapping green ≠ RLS green — cookbook must say so.
 
 ## Success Criteria (Summary)

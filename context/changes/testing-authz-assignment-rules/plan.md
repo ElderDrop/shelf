@@ -25,7 +25,7 @@ After this plan completes:
 
 1. Non-admin (and null-profile) `PATCH` with `{ status: "approved" }` and `{ status: "rejected" }` returns HTTP 403 `{ "error": "Forbidden" }`; catalog `update` is not invoked.
 2. Existing `requireAdmin` unit tests remain green (regression floor).
-3. `assertNotLibraryToWishlist` is exported (or equivalently named pure export); unit tests prove library→wishlist throws `AssignmentServiceError` `forbidden` with the fixed message; wishlist→library does not throw that error.
+3. `assertNotLibraryToWishlist` may be exported as `@internal` for a pure message/shape oracle; **load-bearing** demotion proof is via `updateListType` / `assign` (no DB `update` when demoting). Wishlist→library does not throw the demotion error.
 4. Service-level tests prove demotion is enforced on both `updateListType` and `assign` upsert paths (no DB `update` when demoting).
 5. Service-level tests prove RLS-style insert failures map to `"Cannot assign to a non-approved catalog item"`.
 6. `context/foundation/test-plan.md` §6 documents the new patterns; §6.6 notes Phase 2 shipped and Risk #2 still deferred. §1–§2 risk map not rewritten.
@@ -36,6 +36,7 @@ After this plan completes:
 
 - Risk #2 assignment IDOR / cross-user ownership tests.
 - Middleware-in-process or workerd/Playwright session tests for admin APIs.
+  - **Follow-up (optional):** a thin unit of the middleware `isApiAdmin` 401/403 branch if dual-gate drift becomes a recurring fear — not required to close this plan's Risk #3 prove criteria (route `PATCH` denial).
 - HTML `/admin` page-gate tests as proof of Risk #3.
 - POST `/api/admin/catalog` dedicated mutation test (same `requireAdmin` first line; PATCH approve is the prove target).
 - Runnable RLS/pgTAP CI for approved-only assign (mapping unit only; true DB oracle deferred).
@@ -48,7 +49,7 @@ Three phases by cost × signal: lock admin PATCH denial first (highest impact re
 
 **Risk #3 handler test:** Prefer `vi.mock("@/lib/supabase")` and `vi.mock("@/lib/services/catalog")` (or spy on `update`) **before** importing `PATCH` from the admin `[id]` route. Call `PATCH` with a minimal fake `APIContext` (`locals.profile` = user/null, `params.id` valid UUID, `request` with JSON approve/reject body). Assert status 403, body `{ error: "Forbidden" }`, and `update` not called. Do **not** treat middleware-alone or HTML `/admin` as success.
 
-**Risk #4:** Export the demotion helper for a pure oracle; exercise `updateListType` and `assign` with the existing query-mock style (extend mock if upsert sequencing needs it). Mapping unit: feed insert errors with `42501` and/or messages containing `permission` / `policy` / `row-level security` and assert the fixed forbidden message — document explicitly that this locks **mapping**, not RLS.
+**Risk #4:** Prefer proving demotion via `updateListType` and `assign` with the query-mock (both call sites). Optionally keep `assertNotLibraryToWishlist` exported as `@internal` for a pure message/shape suite — not a public authz boundary. Mapping unit: feed insert errors with `42501` and/or messages containing `permission` / `policy` / `row-level security` and assert the fixed forbidden message — document explicitly that this locks **mapping**, not RLS.
 
 ## Critical Implementation Details
 
@@ -110,13 +111,13 @@ Export and unit the demotion rule; prove it on both service call sites; lock non
 
 ### Changes Required:
 
-#### 1. Export demotion helper
+#### 1. Export demotion helper (optional / `@internal`)
 
 **File**: `src/lib/services/assignments.ts`
 
-**Intent**: Make the pure library→wishlist guard testable as an independent oracle without mirroring UI.
+**Intent**: Optional pure message/shape oracle. Load-bearing demotion proof is the service-path tests below — do not treat the export as a public authz API.
 
-**Contract**: Export `assertNotLibraryToWishlist` (keep existing throw: `AssignmentServiceError` `"forbidden"`, message `"Cannot move a library item to wishlist"`). Call sites in `assign` / `updateListType` unchanged in behavior.
+**Contract**: If exported, document `@internal` and keep throw: `AssignmentServiceError` `"forbidden"`, message `"Cannot move a library item to wishlist"`. Call sites in `assign` / `updateListType` unchanged in behavior.
 
 #### 2. Demotion + promote unit tests
 
@@ -178,7 +179,7 @@ Export and unit the demotion rule; prove it on both service call sites; lock non
 
 ### Overview
 
-Document shipped patterns in test-plan §6; record Phase 2 note; leave §1–§2 untouched aside from §3 status (orchestrator may already say `researched`/`planned`).
+Document shipped patterns in test-plan §6; record Phase 2 note; leave §1–§2 untouched aside from §3 status. **Include committing §3 Phase 2 Status → `complete`** as an explicit Phase 3 deliverable (do not leave it dirty after epilogue).
 
 ### Changes Required:
 
@@ -209,6 +210,7 @@ Document shipped patterns in test-plan §6; record Phase 2 note; leave §1–§2
 
 - `npm test`, `npm run lint`, `npm run build` pass
 - §6 no longer TBD-only for the patterns this change shipped
+- test-plan §3 Phase 2 Status set to `complete` and committed (not left dirty after epilogue)
 
 #### Manual Verification:
 
@@ -297,8 +299,9 @@ N/A — no schema changes. Exporting `assertNotLibraryToWishlist` is a small pub
 
 - [x] 3.1 `npm test`, `npm run lint`, and `npm run build` pass — 8509a67
 - [x] 3.2 test-plan §6 documents shipped admin PATCH + assignment patterns — 8509a67
+- [x] 3.3 test-plan §3 Phase 2 Status set to `complete` and committed — ede57a6
 
 #### Manual
 
-- [x] 3.3 §6.4 + §6.6 match files; Risk #2 deferral explicit — 8509a67
-- [x] 3.4 §2 risk map body unchanged — 8509a67
+- [x] 3.4 §6.4 + §6.6 match files; Risk #2 deferral explicit — 8509a67
+- [x] 3.5 §2 risk map body unchanged — 8509a67

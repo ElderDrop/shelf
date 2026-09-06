@@ -3,7 +3,7 @@ change_id: catalog-schema-rls
 title: Catalog schema rls
 status: impl_reviewed
 created: 2026-06-08
-updated: 2026-08-17
+updated: 2026-08-30
 archived_at: null
 ---
 

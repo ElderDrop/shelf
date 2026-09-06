@@ -20,3 +20,4 @@ Plan 2026-09-03: PATCH handler tests (vi.mock); export demotion helper + both ca
 
 Implemented 2026-09-06 (commits c297c94, ca4bcba, 8509a67).
 Impl review 2026-09-06: APPROVED (see reviews/impl-review.md).
+Plan review 2026-09-06 (retrospective): SOUND (see reviews/plan-review.md) — status left `impl_reviewed` (no regress).

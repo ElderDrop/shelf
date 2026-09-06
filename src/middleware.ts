@@ -67,6 +67,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const isAdmin = context.locals.profile?.role === "admin";
 
+  // Primary admin API gate — must stay aligned with requireAdmin() in src/lib/require-admin.ts
   if (isApiAdmin(pathname)) {
     if (!context.locals.user) {
       return jsonError(401, "Unauthorized");

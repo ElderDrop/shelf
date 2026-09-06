@@ -29,7 +29,7 @@ Kolekcjoner mediów fizycznych nie ma jednego miejsca łączącego posiadane poz
 
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 |---|---|---|---|---|---|
-| F-01 | catalog-schema-rls | (foundation) minimal catalog schema, assignment tables, admin role, and RLS policies landed | — | NFR (access), Access Control | in-progress |
+| F-01 | catalog-schema-rls | (foundation) minimal catalog schema, assignment tables, admin role, and RLS policies landed | — | NFR (access), Access Control | done |
 | S-01 | admin-catalog-approval | admin can manually create or edit catalog items and approve them so approved items appear in the user-facing catalog | F-01 | FR-001, FR-004, FR-006 | done |
 | S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | done |
 | S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | planning |
@@ -73,7 +73,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Sequenced first because data layer is absent in baseline; RLS errors could expose unapproved catalog items — the primary PRD guardrail to get right before any user-facing catalog work.
-- **Status:** in-progress
+- **Status:** done
 
 ## Slices
 
@@ -155,7 +155,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 |---|---|---|---|---|
-| F-01 | catalog-schema-rls | Catalog schema, assignments, admin role, and RLS | yes | Run `/10x-plan catalog-schema-rls` — unlocks north star S-01 |
+| F-01 | catalog-schema-rls | Catalog schema, assignments, admin role, and RLS | no | Done — archive with `/10x-archive catalog-schema-rls` |
 | S-01 | admin-catalog-approval | Admin manual catalog CRUD and approval workflow | no | After F-01 |
 | S-02 | catalog-search-assign | Search approved catalog, assign to library/wishlist, view collections | no | After S-01 |
 | S-03 | admin-metadata-enrichment | Admin automated metadata enrichment with review | yes | Google Books, books-only; run `/10x-implement admin-metadata-enrichment` |

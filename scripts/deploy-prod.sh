@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Deploy Shelf starter to Cloudflare Workers (manual prod deploy — plan Faza 3).
 # Reads CLOUDFLARE_API_TOKEN, SUPABASE_URL, SUPABASE_KEY from repo-root .env.
+# Optional: SUPABASE_SERVICE_ROLE_KEY (required for public share-link resolve in prod).
 
 set -euo pipefail
 
@@ -22,6 +23,11 @@ require_var SUPABASE_KEY
 echo "Setting Wrangler secrets..."
 printf '%s' "$SUPABASE_URL" | npx wrangler secret put SUPABASE_URL
 printf '%s' "$SUPABASE_KEY" | npx wrangler secret put SUPABASE_KEY
+if [[ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ]]; then
+  printf '%s' "$SUPABASE_SERVICE_ROLE_KEY" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+else
+  echo "Note: SUPABASE_SERVICE_ROLE_KEY not set — public share links will fail closed until you wrangler secret put it."
+fi
 
 echo "Building..."
 npm run build

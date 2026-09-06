@@ -96,6 +96,7 @@ npx supabase db reset
 ```
 SUPABASE_URL=http://127.0.0.1:54321
 SUPABASE_KEY=<anon key from CLI output>
+SUPABASE_SERVICE_ROLE_KEY=<service_role key from CLI output>
 ```
 
 4. To stop the stack when done:
@@ -132,14 +133,16 @@ A `BEFORE UPDATE` trigger blocks role changes from the `authenticated` client. `
 
 If you prefer to use a hosted Supabase project, add these variables to your `.env` and `.dev.vars` files:
 
-| Variable       | Description                                                |
-| -------------- | ---------------------------------------------------------- |
-| `SUPABASE_URL` | Project URL from Supabase dashboard → Settings → API       |
-| `SUPABASE_KEY` | `anon` public key from Supabase dashboard → Settings → API |
+| Variable                     | Description                                                                  |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| `SUPABASE_URL`               | Project URL from Supabase dashboard → Settings → API                         |
+| `SUPABASE_KEY`               | `anon` public key from Supabase dashboard → Settings → API                   |
+| `SUPABASE_SERVICE_ROLE_KEY`  | `service_role` key (server-only; needed for public share-link resolve)       |
 
 ```
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_KEY=<anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 ```
 
 ### Email confirmation in local development
@@ -210,7 +213,7 @@ npm run build
 npx wrangler deploy
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
+Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`. For public share links, also set `SUPABASE_SERVICE_ROLE_KEY` (or use `./scripts/deploy-prod.sh`, which puts it when present in `.env`).
 
 ## CI
 

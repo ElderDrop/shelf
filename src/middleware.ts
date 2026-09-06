@@ -20,6 +20,10 @@ function isApiRecommendations(pathname: string) {
   return pathname === "/api/recommendations" || pathname.startsWith("/api/recommendations/");
 }
 
+function isApiShare(pathname: string) {
+  return pathname === "/api/share" || pathname.startsWith("/api/share/");
+}
+
 function isAdminPage(pathname: string) {
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
@@ -86,6 +90,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   if (isApiRecommendations(pathname)) {
+    if (!context.locals.user) {
+      return jsonError(401, "Unauthorized");
+    }
+    return next();
+  }
+
+  if (isApiShare(pathname)) {
     if (!context.locals.user) {
       return jsonError(401, "Unauthorized");
     }

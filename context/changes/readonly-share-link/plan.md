@@ -310,27 +310,27 @@ Additive migration only. No backfill. Deploy: set `SUPABASE_SERVICE_ROLE_KEY` in
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly against local Supabase
-- [x] 1.2 npm run lint passes
-- [x] 1.3 npm test passes (existing suite green)
+- [x] 1.1 Migration applies cleanly against local Supabase — b9fcfa5
+- [x] 1.2 npm run lint passes — b9fcfa5
+- [x] 1.3 npm test passes (existing suite green) — b9fcfa5
 
 #### Manual
 
-- [x] 1.4 .env.example documents SUPABASE_SERVICE_ROLE_KEY; local .dev.vars can set service_role key
-- [x] 1.5 Confirmed no anon GRANT on share_links
+- [x] 1.4 .env.example documents SUPABASE_SERVICE_ROLE_KEY; local .dev.vars can set service_role key — b9fcfa5
+- [x] 1.5 Confirmed no anon GRANT on share_links — b9fcfa5
 
 ### Phase 2: Share service + APIs
 
 #### Automated
 
-- [ ] 2.1 Unit tests for hash/create/revoke/resolve happy path and not-found
-- [ ] 2.2 npm test and npm run lint pass
+- [x] 2.1 Unit tests for hash/create/revoke/resolve happy path and not-found
+- [x] 2.2 npm test and npm run lint pass
 
 #### Manual
 
-- [ ] 2.3 Authenticated GET/POST/DELETE on /api/share behave as designed
-- [ ] 2.4 Unauthenticated /api/share returns 401 JSON
-- [ ] 2.5 Resolve with service role returns both list types; revoked token fails closed
+- [x] 2.3 Authenticated GET/POST/DELETE on /api/share behave as designed
+- [x] 2.4 Unauthenticated /api/share returns 401 JSON
+- [x] 2.5 Resolve with service role returns both list types; revoked token fails closed
 
 ### Phase 3: Owner + recipient UI
 

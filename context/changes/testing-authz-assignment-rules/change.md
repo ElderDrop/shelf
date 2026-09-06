@@ -1,9 +1,9 @@
 ---
 change_id: testing-authz-assignment-rules
 title: Testing authz and assignment rules
-status: implementing
+status: implemented
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-06
 archived_at: null
 ---
 
@@ -18,4 +18,4 @@ Research 2026-09-03: see research.md — #3 multi-gate (middleware + requireAdmi
 
 Plan 2026-09-03: PATCH handler tests (vi.mock); export demotion helper + both call sites; mapping unit only (no RLS CI); cookbook §6. See plan.md / plan-brief.md.
 
-Implementing 2026-09-03.
+Implemented 2026-09-06 (commits c297c94, ca4bcba, 8509a67).

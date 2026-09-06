@@ -295,10 +295,10 @@ N/A — no schema changes. Exporting `assertNotLibraryToWishlist` is a small pub
 
 #### Automated
 
-- [x] 3.1 `npm test`, `npm run lint`, and `npm run build` pass
-- [x] 3.2 test-plan §6 documents shipped admin PATCH + assignment patterns
+- [x] 3.1 `npm test`, `npm run lint`, and `npm run build` pass — 8509a67
+- [x] 3.2 test-plan §6 documents shipped admin PATCH + assignment patterns — 8509a67
 
 #### Manual
 
-- [x] 3.3 §6.4 + §6.6 match files; Risk #2 deferral explicit
-- [x] 3.4 §2 risk map body unchanged
+- [x] 3.3 §6.4 + §6.6 match files; Risk #2 deferral explicit — 8509a67
+- [x] 3.4 §2 risk map body unchanged — 8509a67

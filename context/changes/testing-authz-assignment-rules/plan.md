@@ -265,31 +265,31 @@ N/A — no schema changes. Exporting `assertNotLibraryToWishlist` is a small pub
 
 #### Automated
 
-- [x] 1.1 Non-admin `PATCH` approve → 403 `{ error: "Forbidden" }` and `update` not called
-- [x] 1.2 Non-admin `PATCH` reject → 403 and `update` not called
-- [x] 1.3 Null-profile `PATCH` approve → 403 and `update` not called
-- [x] 1.4 `requireAdmin` unit suite still passes
-- [x] 1.5 `npm test` and `npm run lint` pass
+- [x] 1.1 Non-admin `PATCH` approve → 403 `{ error: "Forbidden" }` and `update` not called — c297c94
+- [x] 1.2 Non-admin `PATCH` reject → 403 and `update` not called — c297c94
+- [x] 1.3 Null-profile `PATCH` approve → 403 and `update` not called — c297c94
+- [x] 1.4 `requireAdmin` unit suite still passes — c297c94
+- [x] 1.5 `npm test` and `npm run lint` pass — c297c94
 
 #### Manual
 
-- [x] 1.6 Suite titles name admin mutation denial / cannot-approve
+- [x] 1.6 Suite titles name admin mutation denial / cannot-approve — c297c94
 
 ### Phase 2: Risk #4 — Assignment rules
 
 #### Automated
 
-- [ ] 2.1 Pure demotion export tests pass (reject + allow)
-- [ ] 2.2 `updateListType` demotion test passes without calling update
-- [ ] 2.3 `assign` upsert demotion test passes
-- [ ] 2.4 Wishlist→library path does not throw demotion error
-- [ ] 2.5 Non-approved mapping unit(s) pass with fixed message
-- [ ] 2.6 `npm test` and `npm run lint` pass
+- [x] 2.1 Pure demotion export tests pass (reject + allow)
+- [x] 2.2 `updateListType` demotion test passes without calling update
+- [x] 2.3 `assign` upsert demotion test passes
+- [x] 2.4 Wishlist→library path does not throw demotion error
+- [x] 2.5 Non-approved mapping unit(s) pass with fixed message
+- [x] 2.6 `npm test` and `npm run lint` pass
 
 #### Manual
 
-- [ ] 2.7 No cross-user IDOR tests added (Risk #2 absent)
-- [ ] 2.8 No UI button-label tests used as demotion oracle
+- [x] 2.7 No cross-user IDOR tests added (Risk #2 absent)
+- [x] 2.8 No UI button-label tests used as demotion oracle
 
 ### Phase 3: Cookbook + handoff
 

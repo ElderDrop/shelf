@@ -89,7 +89,7 @@ function mapPostgrestError(error: { code?: string; message: string }): Assignmen
 }
 
 /** Library is terminal for list-type: demoting to wishlist is forbidden. */
-function assertNotLibraryToWishlist(current: ListType, target: ListType): void {
+export function assertNotLibraryToWishlist(current: ListType, target: ListType): void {
   if (current === "library" && target === "wishlist") {
     throw new AssignmentServiceError("forbidden", "Cannot move a library item to wishlist");
   }

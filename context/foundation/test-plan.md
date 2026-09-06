@@ -113,13 +113,16 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 - **Location**: colocate under `src/` as `*.test.ts` (e.g. `src/lib/services/catalog.test.ts`).
 - **Naming**: describe the failure mode in the suite title (e.g. `listApproved pending-visibility filter`).
-- **Reference test**: `src/lib/services/catalog.test.ts` — asserts `.eq("status", "approved")` on the query builder (oracle = filter call, not mocked row contents). Smoke alias check: `src/lib/services/catalog.smoke.test.ts`.
+- **Reference tests**:
+  - `src/lib/services/catalog.test.ts` — asserts `.eq("status", "approved")` on the query builder (oracle = filter call, not mocked row contents). Smoke alias check: `src/lib/services/catalog.smoke.test.ts`.
+  - `src/lib/services/assignments.test.ts` — demotion rule (`assertNotLibraryToWishlist`) + `updateListType`/`assign` paths; non-approved assign **error mapping** (fixed forbidden message). Do not use UI button labels as the oracle.
 - **Run locally**: `npm test` or `npm run test:watch`.
-- **Fake client**: reuse `src/lib/services/__tests__/supabase-query-mock.ts` for PostgREST chains.
+- **Fake client**: reuse `src/lib/services/__tests__/supabase-query-mock.ts` for PostgREST chains (supports sequential `results` and `auth.getUser` via `authUser`).
 
 ### 6.2 Adding an integration test
 
 - TBD — session + DB/RLS integration not landed yet. Manual SQL snippets remain in `supabase/tests/rls_catalog.sql` (comment-only; not CI).
+- Note: assignment “non-approved” **mapping** units in §6.1 are not session/RLS integration.
 
 ### 6.3 Adding an e2e / contract test
 
@@ -127,18 +130,22 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.4 Adding a test for a new API endpoint
 
-- **Test type**: unit the authz/gate helper when the route imports `astro:env` (do not import the route module under Node Vitest without mocks).
-- **Pattern**: shared `requireAdmin` in `src/lib/require-admin.ts`; assert non-admin → 403 `{ "error": "Forbidden" }`.
-- **Reference test**: `src/lib/require-admin.test.ts`.
+- **Test type**: prefer a Node-safe gate helper, or a mocked route handler when the prove target is a specific mutation.
+- **Helper pattern**: shared `requireAdmin` in `src/lib/require-admin.ts`; assert non-admin → 403 `{ "error": "Forbidden" }`. Reference: `src/lib/require-admin.test.ts`.
+- **Mutation / route pattern**: admin catalog routes import `@/lib/supabase` (`astro:env/server`). Under Vitest, register `vi.mock("@/lib/supabase")` (and usually `vi.mock` for the service) **before** importing the handler. Call the export (e.g. `PATCH`) with a fake `APIContext` (`locals.profile`, `params`, `request`). Assert 403 and that the mutating service was never called.
+- **Reference test**: `src/pages/api/admin/catalog/[id].test.ts` — non-admin/null cannot approve or reject.
+- **Anti-patterns**: HTML `/admin` rewrite alone; middleware-only predicate as “done” for write denial; importing the route without mocks (fails on `astro:env`).
 - **When to add e2e instead**: only if failure requires full cookie/middleware/Worker path.
 
 ### 6.5 Adding RLS / catalog visibility checks
 
 - TBD — runnable RLS CI not landed. App-layer approved filter is covered in §6.1; DB oracle still manual via `supabase/tests/rls_catalog.sql`.
+- Assignment approved-only insert is enforced by RLS in production; the Vitest mapping units lock the remapped error string only — **mapping green ≠ RLS green**.
 
 ### 6.6 Per-rollout-phase notes
 
 - **§3 Phase 1 (`testing-critical-path-bootstrap`)**: Shipped Vitest (Node), `listApproved` `.eq("status","approved")` oracle, shared `requireAdmin` 403 unit tests, and `npm test` in CI. **Risk #2 (assignment IDOR) deferred by frame** — not in Phase 1 scope; do not treat Phase 2 (#3/#4) as absorbing #2.
+- **§3 Phase 2 (`testing-authz-assignment-rules`)**: Shipped admin `PATCH` cannot-approve denial (mocked route), exported demotion helper + service units, non-approved assign mapping units. **Risk #2 still deferred** — not absorbed. Middleware/`requireAdmin` not consolidated; dual-gate JSDoc remains.
 - **§3 Phase 5 (quality-gates wiring)**: `npm test` in CI landed early via Phase 1 change; Phase 5 remains `not started` for any further hardening (coverage thresholds, branch protection docs, etc.).
 
 ## 7. What We Deliberately Don't Test

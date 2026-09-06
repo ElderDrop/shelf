@@ -279,26 +279,26 @@ N/A — no schema changes. Exporting `assertNotLibraryToWishlist` is a small pub
 
 #### Automated
 
-- [x] 2.1 Pure demotion export tests pass (reject + allow)
-- [x] 2.2 `updateListType` demotion test passes without calling update
-- [x] 2.3 `assign` upsert demotion test passes
-- [x] 2.4 Wishlist→library path does not throw demotion error
-- [x] 2.5 Non-approved mapping unit(s) pass with fixed message
-- [x] 2.6 `npm test` and `npm run lint` pass
+- [x] 2.1 Pure demotion export tests pass (reject + allow) — ca4bcba
+- [x] 2.2 `updateListType` demotion test passes without calling update — ca4bcba
+- [x] 2.3 `assign` upsert demotion test passes — ca4bcba
+- [x] 2.4 Wishlist→library path does not throw demotion error — ca4bcba
+- [x] 2.5 Non-approved mapping unit(s) pass with fixed message — ca4bcba
+- [x] 2.6 `npm test` and `npm run lint` pass — ca4bcba
 
 #### Manual
 
-- [x] 2.7 No cross-user IDOR tests added (Risk #2 absent)
-- [x] 2.8 No UI button-label tests used as demotion oracle
+- [x] 2.7 No cross-user IDOR tests added (Risk #2 absent) — ca4bcba
+- [x] 2.8 No UI button-label tests used as demotion oracle — ca4bcba
 
 ### Phase 3: Cookbook + handoff
 
 #### Automated
 
-- [ ] 3.1 `npm test`, `npm run lint`, and `npm run build` pass
-- [ ] 3.2 test-plan §6 documents shipped admin PATCH + assignment patterns
+- [x] 3.1 `npm test`, `npm run lint`, and `npm run build` pass
+- [x] 3.2 test-plan §6 documents shipped admin PATCH + assignment patterns
 
 #### Manual
 
-- [ ] 3.3 §6.4 + §6.6 match files; Risk #2 deferral explicit
-- [ ] 3.4 §2 risk map body unchanged
+- [x] 3.3 §6.4 + §6.6 match files; Risk #2 deferral explicit
+- [x] 3.4 §2 risk map body unchanged

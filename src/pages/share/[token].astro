@@ -1,0 +1,97 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { shareTokenSchema } from "@/lib/schemas/share";
+import { resolveShareByToken } from "@/lib/services/share";
+import type { ShareAssignmentItem } from "@/lib/services/share";
+
+export const prerender = false;
+
+const rawToken = Astro.params.token ?? "";
+const parsed = shareTokenSchema.safeParse(rawToken);
+
+let failed = !parsed.success;
+let library: ShareAssignmentItem[] = [];
+let wishlist: ShareAssignmentItem[] = [];
+
+if (parsed.success) {
+  try {
+    const resolved = await resolveShareByToken(parsed.data);
+    library = resolved.library;
+    wishlist = resolved.wishlist;
+  } catch {
+    failed = true;
+  }
+}
+
+if (failed) {
+  Astro.response.status = 404;
+}
+---
+
+{
+  failed ? (
+    <Layout title="Share link unavailable">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
+        <div class="mx-auto max-w-3xl">
+          <h1 class="text-2xl font-semibold tracking-tight">Share link unavailable</h1>
+          <p class="mt-4 text-sm text-zinc-400">This share link is invalid or has been revoked.</p>
+        </div>
+      </main>
+    </Layout>
+  ) : (
+    <Layout title="Shared collection">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
+        <div class="mx-auto max-w-3xl">
+          <h1 class="text-2xl font-semibold tracking-tight">Shared collection</h1>
+          <p class="mt-1 text-sm text-zinc-400">Read-only view of library and wishlist.</p>
+
+          <section class="mt-10">
+            <h2 class="text-lg font-medium text-zinc-50">Library</h2>
+            {library.length === 0 ? (
+              <p class="mt-2 text-sm text-zinc-400">No library items.</p>
+            ) : (
+              <ul class="mt-4 space-y-6">
+                {library.map((row) => (
+                  <li class="border-b border-zinc-800 pb-6 last:border-b-0">
+                    <h3 class="text-base font-medium text-zinc-50">{row.catalog_item.title}</h3>
+                    {row.catalog_item.description ? (
+                      <p class="mt-2 text-sm leading-relaxed text-zinc-300">{row.catalog_item.description}</p>
+                    ) : null}
+                    {row.catalog_item.tags.length > 0 ? (
+                      <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">
+                        {row.catalog_item.tags.join(" · ")}
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section class="mt-10">
+            <h2 class="text-lg font-medium text-zinc-50">Wishlist</h2>
+            {wishlist.length === 0 ? (
+              <p class="mt-2 text-sm text-zinc-400">No wishlist items.</p>
+            ) : (
+              <ul class="mt-4 space-y-6">
+                {wishlist.map((row) => (
+                  <li class="border-b border-zinc-800 pb-6 last:border-b-0">
+                    <h3 class="text-base font-medium text-zinc-50">{row.catalog_item.title}</h3>
+                    {row.catalog_item.description ? (
+                      <p class="mt-2 text-sm leading-relaxed text-zinc-300">{row.catalog_item.description}</p>
+                    ) : null}
+                    {row.catalog_item.tags.length > 0 ? (
+                      <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">
+                        {row.catalog_item.tags.join(" · ")}
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      </main>
+    </Layout>
+  )
+}

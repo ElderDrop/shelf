@@ -323,30 +323,30 @@ Additive migration only. No backfill. Deploy: set `SUPABASE_SERVICE_ROLE_KEY` in
 
 #### Automated
 
-- [x] 2.1 Unit tests for hash/create/revoke/resolve happy path and not-found
-- [x] 2.2 npm test and npm run lint pass
+- [x] 2.1 Unit tests for hash/create/revoke/resolve happy path and not-found — ef2f4c5
+- [x] 2.2 npm test and npm run lint pass — ef2f4c5
 
 #### Manual
 
-- [x] 2.3 Authenticated GET/POST/DELETE on /api/share behave as designed
-- [x] 2.4 Unauthenticated /api/share returns 401 JSON
-- [x] 2.5 Resolve with service role returns both list types; revoked token fails closed
+- [x] 2.3 Authenticated GET/POST/DELETE on /api/share behave as designed — ef2f4c5
+- [x] 2.4 Unauthenticated /api/share returns 401 JSON — ef2f4c5
+- [x] 2.5 Resolve with service role returns both list types; revoked token fails closed — ef2f4c5
 
 ### Phase 3: Owner + recipient UI
 
 #### Automated
 
-- [ ] 3.1 npm run lint passes
-- [ ] 3.2 npm test passes
-- [ ] 3.3 npm run build succeeds with env secrets available as in CI
+- [x] 3.1 npm run lint passes
+- [x] 3.2 npm test passes
+- [x] 3.3 npm run build succeeds with env secrets available as in CI
 
 #### Manual
 
-- [ ] 3.4 Owner generate → copy → private window shows both lists, no edit controls
-- [ ] 3.5 Revoke soft-fails prior URL; regenerate kills old URL
-- [ ] 3.6 Signed-in non-owner share view is read-only
-- [ ] 3.7 Owner own share URL is read-only on that page
-- [ ] 3.8 Unauthenticated assignment mutate still 401
+- [x] 3.4 Owner generate → copy → private window shows both lists, no edit controls
+- [x] 3.5 Revoke soft-fails prior URL; regenerate kills old URL
+- [x] 3.6 Signed-in non-owner share view is read-only
+- [x] 3.7 Owner own share URL is read-only on that page
+- [x] 3.8 Unauthenticated assignment mutate still 401
 
 ### Phase 4: Guardrail tests
 

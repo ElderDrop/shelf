@@ -352,9 +352,9 @@ Additive migration only. No backfill. Deploy: set `SUPABASE_SERVICE_ROLE_KEY` in
 
 #### Automated
 
-- [x] 4.1 New tests fail if resolve skips revoked check or assignments accept unauthenticated mutate
-- [x] 4.2 npm test and npm run lint pass
+- [x] 4.1 New tests fail if resolve skips revoked check or assignments accept unauthenticated mutate — 81c3f8c
+- [x] 4.2 npm test and npm run lint pass — 81c3f8c
 
 #### Manual
 
-- [x] 4.3 Spot-check revoked link in browser still soft-fails
+- [x] 4.3 Spot-check revoked link in browser still soft-fails — 81c3f8c

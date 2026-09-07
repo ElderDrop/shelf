@@ -27,9 +27,14 @@ export interface UserAssignment {
   created_at: string;
 }
 
-/** Active share link row (raw token never stored / never returned on GET). */
+/**
+ * Active share link for the owner.
+ * Raw `token` is stored for re-disclosure after reload (null on legacy hash-only rows).
+ * Authenticated GET builds `url` from token — do not return bare token on GET.
+ */
 export interface ShareLink {
   id: string;
   user_id: string;
   created_at: string;
+  token: string | null;
 }

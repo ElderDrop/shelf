@@ -43,6 +43,8 @@ interface ShareLinkRow {
   user_id: string;
   token_hash: string;
   created_at: string;
+  /** Present on owner selects only; resolve select omits this column. */
+  token?: string | null;
 }
 
 interface CatalogEmbed {
@@ -62,6 +64,7 @@ function mapShareLink(row: ShareLinkRow): ShareLink {
     id: row.id,
     user_id: row.user_id,
     created_at: row.created_at,
+    token: row.token ?? null,
   };
 }
 
@@ -101,12 +104,12 @@ async function requireUserId(client: SupabaseClient): Promise<string> {
   return user.id;
 }
 
-/** Owner: active link metadata (no raw token). */
+/** Owner: active link metadata + stored token when present (null for legacy rows). */
 export async function getActiveShareLink(client: SupabaseClient): Promise<ShareLink | null> {
   const userId = await requireUserId(client);
   const { data, error } = await client
     .from("share_links")
-    .select("id, user_id, token_hash, created_at")
+    .select("id, user_id, token_hash, token, created_at")
     .eq("user_id", userId)
     .maybeSingle();
 
@@ -121,7 +124,8 @@ export async function getActiveShareLink(client: SupabaseClient): Promise<ShareL
 
 /**
  * Owner: create or rotate — always issues a new raw token.
- * Deletes any existing row for the user, then inserts.
+ * Rotate updates `token_hash` in place (no delete-then-insert gap).
+ * Create inserts when no row exists. Revoke remains delete-only.
  */
 export async function createOrRotateShareLink(client: SupabaseClient): Promise<CreateOrRotateResult> {
   const userId = await requireUserId(client);
@@ -131,20 +135,32 @@ export async function createOrRotateShareLink(client: SupabaseClient): Promise<C
   }
   const hadPrior = Boolean(existing.data);
 
-  if (hadPrior) {
-    const { error: deleteError } = await client.from("share_links").delete().eq("user_id", userId);
-    if (deleteError) {
-      throw mapPostgrestError(deleteError);
-    }
-  }
-
   const rawToken = generateShareToken();
   const tokenHash = await hashShareToken(rawToken);
 
+  if (hadPrior) {
+    const { data, error } = await client
+      .from("share_links")
+      .update({ token_hash: tokenHash, token: rawToken, created_at: new Date().toISOString() })
+      .eq("user_id", userId)
+      .select("id, user_id, token_hash, token, created_at")
+      .single();
+
+    if (error) {
+      throw mapPostgrestError(error);
+    }
+
+    return {
+      share: mapShareLink(data),
+      rawToken,
+      created: false,
+    };
+  }
+
   const { data, error } = await client
     .from("share_links")
-    .insert({ user_id: userId, token_hash: tokenHash })
-    .select("id, user_id, token_hash, created_at")
+    .insert({ user_id: userId, token_hash: tokenHash, token: rawToken })
+    .select("id, user_id, token_hash, token, created_at")
     .single();
 
   if (error) {
@@ -154,7 +170,7 @@ export async function createOrRotateShareLink(client: SupabaseClient): Promise<C
   return {
     share: mapShareLink(data),
     rawToken,
-    created: !hadPrior,
+    created: true,
   };
 }
 
@@ -180,6 +196,7 @@ function mapEmbed(embed: CatalogEmbed | CatalogEmbed[] | null): ShareCatalogItem
 /**
  * Public resolve via service-role client only.
  * Never call listForUser here — must filter user_id + approved catalog.
+ * Assignments load up to PostgREST max_rows (default 1000); excess rows are truncated silently.
  */
 export async function resolveShareByToken(rawToken: string): Promise<ResolvedShare> {
   const service = createServiceClient();

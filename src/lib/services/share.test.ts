@@ -48,7 +48,7 @@ describe("getActiveShareLink", () => {
     await expect(getActiveShareLink(client as unknown as SupabaseClient)).resolves.toBeNull();
   });
 
-  it("returns share metadata without exposing hash as token", async () => {
+  it("returns share metadata with null token for legacy hash-only rows", async () => {
     const { client } = createSupabaseQueryMock({
       authUser: { id: USER_ID },
       results: [
@@ -68,6 +68,7 @@ describe("getActiveShareLink", () => {
       id: SHARE_ID,
       user_id: USER_ID,
       created_at: "2026-09-06T00:00:00.000Z",
+      token: null,
     });
   });
 });
@@ -94,7 +95,12 @@ describe("createOrRotateShareLink", () => {
     expect(result.created).toBe(true);
     expect(result.rawToken.length).toBeGreaterThan(16);
     expect(callsNamed(calls, "delete")).toHaveLength(0);
-    expect(callsNamed(calls, "insert").length).toBeGreaterThan(0);
+    const inserts = callsNamed(calls, "insert");
+    expect(inserts.length).toBeGreaterThan(0);
+    const payload = inserts[0]?.args[0] as { token?: string; token_hash?: string };
+    expect(payload.token).toBe(result.rawToken);
+    expect(typeof payload.token_hash).toBe("string");
+    expect(payload.token_hash?.length).toBe(64);
   });
 
   it("rotates when prior row exists (created: false)", async () => {
@@ -102,12 +108,12 @@ describe("createOrRotateShareLink", () => {
       authUser: { id: USER_ID },
       results: [
         { data: { id: SHARE_ID }, error: null },
-        { data: null, error: null },
         {
           data: {
-            id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+            id: SHARE_ID,
             user_id: USER_ID,
             token_hash: "cafebabe",
+            token: "stored-raw",
             created_at: "2026-09-06T01:00:00.000Z",
           },
           error: null,
@@ -117,8 +123,14 @@ describe("createOrRotateShareLink", () => {
 
     const result = await createOrRotateShareLink(client as unknown as SupabaseClient);
     expect(result.created).toBe(false);
-    expect(callsNamed(calls, "delete").length).toBeGreaterThan(0);
-    expect(callsNamed(calls, "insert").length).toBeGreaterThan(0);
+    expect(callsNamed(calls, "delete")).toHaveLength(0);
+    expect(callsNamed(calls, "insert")).toHaveLength(0);
+    const updates = callsNamed(calls, "update");
+    expect(updates.length).toBeGreaterThan(0);
+    const payload = updates[0]?.args[0] as { token?: string; token_hash?: string };
+    expect(payload.token).toBe(result.rawToken);
+    expect(typeof payload.token_hash).toBe("string");
+    expect(payload.token_hash?.length).toBe(64);
   });
 });
 

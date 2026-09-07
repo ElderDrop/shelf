@@ -336,25 +336,25 @@ Additive migration only. No backfill. Deploy: set `SUPABASE_SERVICE_ROLE_KEY` in
 
 #### Automated
 
-- [x] 3.1 npm run lint passes
-- [x] 3.2 npm test passes
-- [x] 3.3 npm run build succeeds with env secrets available as in CI
+- [x] 3.1 npm run lint passes — df39443
+- [x] 3.2 npm test passes — df39443
+- [x] 3.3 npm run build succeeds with env secrets available as in CI — df39443
 
 #### Manual
 
-- [x] 3.4 Owner generate → copy → private window shows both lists, no edit controls
-- [x] 3.5 Revoke soft-fails prior URL; regenerate kills old URL
-- [x] 3.6 Signed-in non-owner share view is read-only
-- [x] 3.7 Owner own share URL is read-only on that page
-- [x] 3.8 Unauthenticated assignment mutate still 401
+- [x] 3.4 Owner generate → copy → private window shows both lists, no edit controls — df39443
+- [x] 3.5 Revoke soft-fails prior URL; regenerate kills old URL — df39443
+- [x] 3.6 Signed-in non-owner share view is read-only — df39443
+- [x] 3.7 Owner own share URL is read-only on that page — df39443
+- [x] 3.8 Unauthenticated assignment mutate still 401 — df39443
 
 ### Phase 4: Guardrail tests
 
 #### Automated
 
-- [ ] 4.1 New tests fail if resolve skips revoked check or assignments accept unauthenticated mutate
-- [ ] 4.2 npm test and npm run lint pass
+- [x] 4.1 New tests fail if resolve skips revoked check or assignments accept unauthenticated mutate
+- [x] 4.2 npm test and npm run lint pass
 
 #### Manual
 
-- [ ] 4.3 Spot-check revoked link in browser still soft-fails
+- [x] 4.3 Spot-check revoked link in browser still soft-fails

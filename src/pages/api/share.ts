@@ -35,6 +35,14 @@ export const GET: APIRoute = async (context) => {
     if (!link) {
       return jsonOk({ active: false });
     }
+    if (link.token) {
+      const origin = new URL(context.request.url).origin;
+      return jsonOk({
+        active: true,
+        created_at: link.created_at,
+        url: `${origin}/share/${link.token}`,
+      });
+    }
     return jsonOk({ active: true, created_at: link.created_at });
   } catch (error) {
     return serviceErrorResponse(error);

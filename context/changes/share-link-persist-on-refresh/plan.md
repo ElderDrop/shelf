@@ -210,26 +210,26 @@ None material — one extra nullable column; GET already runs on island mount.
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly against local Supabase
-- [x] 1.2 npm run lint passes
-- [x] 1.3 npm test passes (service dual-write / null token)
+- [x] 1.1 Migration applies cleanly against local Supabase — 8e6caee
+- [x] 1.2 npm run lint passes — 8e6caee
+- [x] 1.3 npm test passes (service dual-write / null token) — 8e6caee
 
 #### Manual
 
-- [x] 1.4 Existing share row still resolves; owner status active without url until regenerate
+- [x] 1.4 Existing share row still resolves; owner status active without url until regenerate — 8e6caee
 
 ### Phase 2: API + Library island
 
 #### Automated
 
-- [ ] 2.1 npm run lint passes
-- [ ] 2.2 npm test passes
+- [x] 2.1 npm run lint passes
+- [x] 2.2 npm test passes
 
 #### Manual
 
-- [ ] 2.3 Generate → refresh → same URL + Copy; public page works
-- [ ] 2.4 Legacy path: regenerate once then refresh keeps URL
-- [ ] 2.5 Regenerate invalidates previous public URL
+- [x] 2.3 Generate → refresh → same URL + Copy; public page works
+- [x] 2.4 Legacy path: regenerate once then refresh keeps URL
+- [x] 2.5 Regenerate invalidates previous public URL
 
 ### Phase 3: Guardrail tests
 

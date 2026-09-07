@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 interface ShareStatus {
   active: boolean;
   created_at?: string;
+  url?: string;
 }
 
 interface ShareCreateResponse {
@@ -56,6 +57,9 @@ export default function ShareLinkControls() {
         }
         const body = (await response.json()) as { data: ShareStatus };
         setStatus(body.data);
+        if (body.data.url) {
+          setUrl(body.data.url);
+        }
       } catch (err) {
         if (controller.signal.aborted) return;
         setError(err instanceof Error ? err.message : "Failed to load share status");

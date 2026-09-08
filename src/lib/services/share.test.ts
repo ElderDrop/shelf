@@ -71,6 +71,26 @@ describe("getActiveShareLink", () => {
       token: null,
     });
   });
+
+  it("returns stored token when present", async () => {
+    const { client } = createSupabaseQueryMock({
+      authUser: { id: USER_ID },
+      results: [
+        {
+          data: {
+            id: SHARE_ID,
+            user_id: USER_ID,
+            token_hash: "abc",
+            token: "raw-share-token-value",
+            created_at: "2026-09-06T00:00:00.000Z",
+          },
+          error: null,
+        },
+      ],
+    });
+    const link = await getActiveShareLink(client as unknown as SupabaseClient);
+    expect(link?.token).toBe("raw-share-token-value");
+  });
 });
 
 describe("createOrRotateShareLink", () => {
@@ -204,6 +224,11 @@ describe("resolveShareByToken", () => {
     const eqs = callsNamed(calls, "eq");
     expect(eqs.some((c) => c.args[0] === "user_id" && c.args[1] === USER_ID)).toBe(true);
     expect(eqs.some((c) => c.args[0] === "catalog_items.status" && c.args[1] === "approved")).toBe(true);
+
+    const selects = callsNamed(calls, "select");
+    const linkSelect = selects.find((c) => typeof c.args[0] === "string" && String(c.args[0]).includes("token_hash"));
+    expect(linkSelect?.args[0]).toBe("id, user_id, token_hash, created_at");
+    expect(String(linkSelect?.args[0])).not.toMatch(/(^|[,\s])token([,\s]|$)/);
   });
 });
 

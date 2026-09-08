@@ -222,22 +222,22 @@ None material — one extra nullable column; GET already runs on island mount.
 
 #### Automated
 
-- [x] 2.1 npm run lint passes
-- [x] 2.2 npm test passes
+- [x] 2.1 npm run lint passes — d6f7398
+- [x] 2.2 npm test passes — d6f7398
 
 #### Manual
 
-- [x] 2.3 Generate → refresh → same URL + Copy; public page works
-- [x] 2.4 Legacy path: regenerate once then refresh keeps URL
-- [x] 2.5 Regenerate invalidates previous public URL
+- [x] 2.3 Generate → refresh → same URL + Copy; public page works — d6f7398
+- [x] 2.4 Legacy path: regenerate once then refresh keeps URL — d6f7398
+- [x] 2.5 Regenerate invalidates previous public URL — d6f7398
 
 ### Phase 3: Guardrail tests
 
 #### Automated
 
-- [ ] 3.1 npm test passes
-- [ ] 3.2 npm run lint passes
+- [x] 3.1 npm test passes
+- [x] 3.2 npm run lint passes
 
 #### Manual
 
-- [ ] 3.3 Optional spot-check Library share controls after test tweaks
+- [x] 3.3 Optional spot-check Library share controls after test tweaks

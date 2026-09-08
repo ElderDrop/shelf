@@ -235,9 +235,9 @@ None material — one extra nullable column; GET already runs on island mount.
 
 #### Automated
 
-- [x] 3.1 npm test passes
-- [x] 3.2 npm run lint passes
+- [x] 3.1 npm test passes — 3f9561b
+- [x] 3.2 npm run lint passes — 3f9561b
 
 #### Manual
 
-- [x] 3.3 Optional spot-check Library share controls after test tweaks
+- [x] 3.3 Optional spot-check Library share controls after test tweaks — 3f9561b

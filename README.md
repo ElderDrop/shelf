@@ -217,7 +217,29 @@ Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or
 
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+GitHub Actions runs lint + test + build on every push and PR to `master` (`.github/workflows/ci.yml`). Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+
+### AI code review
+
+Workflow `.github/workflows/review.yml` runs the Cursor SDK reviewer (composite action `.github/actions/ai-reviewer`) on PRs to `master`, and again when the label `ai-cr:review` is added.
+
+1. Add repository secret `CURSOR_API_KEY` (same value as local `.env`; create at https://cursor.com/dashboard/integrations).
+2. Optional repository variable `CURSOR_REVIEW_MODEL` (default `composer-2.5`).
+3. Labels are auto-created on first run: `ai-cr:passed`, `ai-cr:failed`, `ai-cr:review`.
+
+Local dry-run:
+
+```bash
+npm run review:sample
+# or
+git diff master...HEAD | npm run review
+```
+
+Model bakeoff (promptfoo; requires **Node 22** — `better-sqlite3` does not build on Node 26):
+
+```bash
+cd packages/code-review-agent && npm run eval
+```
 
 ## License
 

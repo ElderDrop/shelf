@@ -1,0 +1,77 @@
+name: AI Reviewer
+description: Run Shelf Cursor SDK code-review agent and expose structured verdict
+
+inputs:
+  api-key:
+    description: Cursor API key
+    required: true
+  pr-title:
+    description: Pull request title
+    required: false
+    default: ""
+  pr-body:
+    description: Pull request body
+    required: false
+    default: ""
+  diff-path:
+    description: Path to unified diff file (relative to workspace or absolute)
+    required: true
+  model:
+    description: Cursor model id (CURSOR_REVIEW_MODEL)
+    required: false
+    default: "composer-2.5"
+  change-id:
+    description: Optional change-id to inject context/changes/<id>/plan.md
+    required: false
+    default: ""
+
+outputs:
+  verdict:
+    description: pass or fail
+    value: ${{ steps.agent.outputs.verdict }}
+  summary:
+    description: Markdown summary for PR comment
+    value: ${{ steps.agent.outputs.summary }}
+  implementationCorrectness:
+    description: Score 1-10
+    value: ${{ steps.agent.outputs.implementationCorrectness }}
+  idiomaticity:
+    description: Score 1-10
+    value: ${{ steps.agent.outputs.idiomaticity }}
+  complexity:
+    description: Score 1-10
+    value: ${{ steps.agent.outputs.complexity }}
+  testRiskCoverage:
+    description: Score 1-10
+    value: ${{ steps.agent.outputs.testRiskCoverage }}
+  securitySafety:
+    description: Score 1-10
+    value: ${{ steps.agent.outputs.securitySafety }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: packages/code-review-agent/package-lock.json
+
+    - name: Install agent dependencies
+      shell: bash
+      run: npm ci
+      working-directory: packages/code-review-agent
+
+    - name: Run review agent
+      id: agent
+      shell: bash
+      working-directory: packages/code-review-agent
+      env:
+        CURSOR_API_KEY: ${{ inputs.api-key }}
+        CURSOR_REVIEW_MODEL: ${{ inputs.model }}
+        PR_TITLE: ${{ inputs.pr-title }}
+        PR_BODY: ${{ inputs.pr-body }}
+        REVIEW_CHANGE_ID: ${{ inputs.change-id }}
+        REVIEW_DIFF_PATH: ${{ inputs.diff-path }}
+      run: npm run review

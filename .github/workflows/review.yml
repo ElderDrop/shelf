@@ -1,0 +1,134 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.action != 'labeled' ||
+      github.event.label.name == 'ai-cr:review'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute PR diff
+        id: diff
+        shell: bash
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref || github.base_ref || 'master' }}
+        run: |
+          set -euo pipefail
+          git fetch origin "$BASE_REF" --depth=1 || true
+          DIFF_FILE="${RUNNER_TEMP}/pr.diff"
+          if git rev-parse --verify "origin/${BASE_REF}" >/dev/null 2>&1; then
+            git diff "origin/${BASE_REF}...HEAD" > "$DIFF_FILE"
+          else
+            git diff "HEAD~1...HEAD" > "$DIFF_FILE" || git diff > "$DIFF_FILE"
+          fi
+          bytes=$(wc -c < "$DIFF_FILE" | tr -d ' ')
+          echo "Wrote diff (${bytes} bytes) to $DIFF_FILE"
+          if [ "$bytes" -eq 0 ]; then
+            echo "::warning::Empty diff — agent may fail closed"
+          fi
+          echo "path=$DIFF_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Run AI reviewer
+        id: review
+        uses: ./.github/actions/ai-reviewer
+        with:
+          api-key: ${{ secrets.CURSOR_API_KEY }}
+          pr-title: ${{ github.event.pull_request.title || github.event.head_commit.message || 'manual dispatch' }}
+          pr-body: ${{ github.event.pull_request.body || '' }}
+          diff-path: ${{ steps.diff.outputs.path }}
+          model: ${{ vars.CURSOR_REVIEW_MODEL || 'composer-2.5' }}
+
+      - name: Ensure labels exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          ensure_label() {
+            local name="$1" color="$2" desc="$3"
+            if ! gh label list --repo "$GITHUB_REPOSITORY" --search "$name" --json name --jq '.[].name' | grep -qx "$name"; then
+              gh label create "$name" --repo "$GITHUB_REPOSITORY" --color "$color" --description "$desc" || true
+            fi
+          }
+          ensure_label "ai-cr:passed" "0E8A16" "AI code review passed"
+          ensure_label "ai-cr:failed" "D93F0B" "AI code review failed"
+          ensure_label "ai-cr:review" "1D76DB" "Request AI code review re-run"
+
+      - name: Comment and label PR
+        if: github.event.pull_request.number
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERDICT: ${{ steps.review.outputs.verdict }}
+          SUMMARY: ${{ steps.review.outputs.summary }}
+          S1: ${{ steps.review.outputs.implementationCorrectness }}
+          S2: ${{ steps.review.outputs.idiomaticity }}
+          S3: ${{ steps.review.outputs.complexity }}
+          S4: ${{ steps.review.outputs.testRiskCoverage }}
+          S5: ${{ steps.review.outputs.securitySafety }}
+          PR: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          marker="<!-- ai-cr-review -->"
+          body=$(cat <<EOF
+          ${marker}
+          ## AI Code Review — \`${VERDICT}\`
+
+          | Criterion | Score |
+          |---|---|
+          | Implementation correctness | ${S1}/10 |
+          | Idiomaticity | ${S2}/10 |
+          | Complexity | ${S3}/10 |
+          | Test / risk coverage | ${S4}/10 |
+          | Security & safety | ${S5}/10 |
+
+          ${SUMMARY}
+
+          _Re-run: add label \`ai-cr:review\`._
+          EOF
+          )
+
+          existing=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" \
+            --jq ".[] | select(.body | contains(\"${marker}\")) | .id" | head -n1 || true)
+          if [ -n "${existing}" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing}" \
+              -f body="$body" >/dev/null
+          else
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" \
+              -f body="$body" >/dev/null
+          fi
+
+          gh api -X DELETE "repos/${GITHUB_REPOSITORY}/issues/${PR}/labels/ai-cr%3Apassed" || true
+          gh api -X DELETE "repos/${GITHUB_REPOSITORY}/issues/${PR}/labels/ai-cr%3Afailed" || true
+          gh api -X DELETE "repos/${GITHUB_REPOSITORY}/issues/${PR}/labels/ai-cr%3Areview" || true
+
+          if [ "$VERDICT" = "pass" ]; then
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/issues/${PR}/labels" \
+              -f "labels[]=ai-cr:passed" >/dev/null
+          else
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/issues/${PR}/labels" \
+              -f "labels[]=ai-cr:failed" >/dev/null
+          fi
+
+      - name: Fail job on failed verdict
+        if: steps.review.outputs.verdict == 'fail'
+        shell: bash
+        run: |
+          echo "::error::AI code review verdict=fail"
+          exit 1

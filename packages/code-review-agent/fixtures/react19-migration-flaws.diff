@@ -1,0 +1,110 @@
+diff --git a/src/components/LibraryItemCard.tsx b/src/components/LibraryItemCard.tsx
+index 1111111..2222222 100644
+--- a/src/components/LibraryItemCard.tsx
++++ b/src/components/LibraryItemCard.tsx
+@@ -1,48 +1,62 @@
+-import React, { Component } from "react";
+-
+-type Props = {
+-  title: string;
+-  description: string;
+-  tags: string[];
+-  onAssign: (id: string) => void;
+-  itemId: string;
+-};
+-
+-type State = {
+-  expanded: boolean;
+-};
+-
+-export class LibraryItemCard extends Component<Props, State> {
+-  state: State = { expanded: false };
+-
+-  toggle = () => {
+-    this.setState({ expanded: !this.state.expanded });
+-  };
+-
+-  render() {
+-    const { title, description, tags, onAssign, itemId } = this.props;
+-    return (
+-      <article>
+-        <h3>{title}</h3>
+-        <button type="button" onClick={this.toggle}>
+-          {this.state.expanded ? "Hide" : "Show"}
+-        </button>
+-        {this.state.expanded ? <p>{description}</p> : null}
+-        <ul>
+-          {tags.map((tag) => (
+-            <li key={tag}>{tag}</li>
+-          ))}
+-        </ul>
+-        <button type="button" onClick={() => onAssign(itemId)}>
+-          Add to library
+-        </button>
+-      </article>
+-    );
+-  }
+-}
++import React, { useEffect, useState } from "react";
++
++// "Migrated" to React 19 function component — but with three serious flaws:
++// 1) defaultProps on function component (removed pattern; silent undefined props)
++// 2) unsafe innerHTML from description (XSS)
++// 3) fetch in render path with missing cleanup + no auth header (leaks / races)
++
++type Props = {
++  title: string;
++  description: string;
++  tags: string[];
++  onAssign: (id: string) => void;
++  itemId: string;
++  className?: string;
++};
++
++export function LibraryItemCard(props: Props) {
++  const { title, description, tags, onAssign, itemId } = props;
++  const [expanded, setExpanded] = useState(false);
++  const [related, setRelated] = useState<string[]>([]);
++
++  // Flaw 3: network call without AbortController; no Authorization
++  useEffect(() => {
++    fetch(`/api/recommendations?q=${title}`).then(async (res) => {
++      const data = await res.json();
++      setRelated(data.items.map((i: { title: string }) => i.title));
++    });
++  });
++
++  return (
++    <article className={"card " + (props.className || "")}>
++      <h3>{title}</h3>
++      <button type="button" onClick={() => setExpanded(!expanded)}>
++        {expanded ? "Hide" : "Show"}
++      </button>
++      {/* Flaw 2: XSS via unsanitized HTML */}
++      {expanded ? (
++        <div
++          dangerouslySetInnerHTML={
++            // spaced form avoids promptfoo/nunjucks treating adjacent braces as template
++            ({ __html: description })
++          }
++        />
++      ) : null}
++      <ul>
++        {tags.map((tag, index) => (
++          <li key={index}>{tag}</li>
++        ))}
++      </ul>
++      <button type="button" onClick={() => onAssign(itemId)}>
++        Add to library
++      </button>
++      <p>{related.join(", ")}</p>
++    </article>
++  );
++}
++
++// Flaw 1: defaultProps on function components is unsupported / ignored in React 19
++LibraryItemCard.defaultProps = {
++  description: "<img src=x onerror=alert('xss')>",
++  tags: [],
++  className: "rounded-xl shadow-lg bg-purple-500 text-white",
++};

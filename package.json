@@ -11,7 +11,10 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "review": "npm run review --prefix packages/code-review-agent",
+    "review:sample": "npm run review:sample --prefix packages/code-review-agent",
+    "review:eval": "npm run eval --prefix packages/code-review-agent"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",

@@ -1,0 +1,27 @@
+{
+  "name": "@10x/code-review-agent",
+  "version": "1.0.0",
+  "description": "Local code-review agent via Cursor SDK",
+  "scripts": {
+    "review": "tsx src/review.ts",
+    "review:sample": "tsx src/review.ts < fixtures/sample.diff",
+    "typecheck": "tsc --noEmit",
+    "eval": "promptfoo eval",
+    "eval:view": "promptfoo view"
+  },
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.14.0 <23"
+  },
+  "dependencies": {
+    "@cursor/sdk": "^1.0.31",
+    "zod": "^4.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "promptfoo": "^0.118.17",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}

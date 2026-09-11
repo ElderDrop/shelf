@@ -1,0 +1,58 @@
+# Promptfoo bakeoff for Cursor SDK code-review agent.
+# Requires CURSOR_API_KEY in the environment (or repo .env loaded by the CLI).
+#
+#   cd packages/code-review-agent && npm run eval
+
+description: Shelf code-review agent — model comparison
+
+prompts:
+  - "{{diff}}"
+
+providers:
+  - id: file://./evals/provider.ts
+    label: composer-2.5
+    config:
+      model: composer-2.5
+  - id: file://./evals/provider.ts
+    label: composer-2
+    config:
+      model: composer-2
+
+tests:
+  - description: insecure auth sample must fail with low security score
+    vars:
+      diff: file://./fixtures/sample.diff
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const r = typeof output === 'string' ? JSON.parse(output) : output;
+          return r.verdict === 'fail' && Number(r.securitySafety) <= 4;
+      - type: javascript
+        value: |
+          const r = typeof output === 'string' ? JSON.parse(output) : output;
+          const s = String(r.summary || '').toLowerCase();
+          return /secret|bypass|session|auth/.test(s);
+
+  - description: React 16→19 migration with three flaws must fail
+    vars:
+      diff: file://./fixtures/react19-migration-flaws.diff
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const r = typeof output === 'string' ? JSON.parse(output) : output;
+          return r.verdict === 'fail' && (
+            Number(r.securitySafety) <= 5 ||
+            Number(r.implementationCorrectness) <= 5
+          );
+      - type: javascript
+        value: |
+          const r = typeof output === 'string' ? JSON.parse(output) : output;
+          const s = String(r.summary || '').toLowerCase();
+          const xss = /xss|dangerouslysetinnerhtml|innerhtml|html injection/.test(s);
+          const other = /defaultprops|useeffect|abort|fetch|deps/.test(s);
+          return xss && other;
+      # Optional LLM-as-judge when OPENAI_API_KEY (or configured judge provider) is set:
+      # - type: llm-rubric
+      #   value: Identify XSS via dangerouslySetInnerHTML and defaultProps or buggy useEffect.

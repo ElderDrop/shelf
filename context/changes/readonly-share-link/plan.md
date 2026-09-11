@@ -292,6 +292,8 @@ Same PostgREST `max_rows` (~1000) cap as library/wishlist lists — acceptable f
 
 Additive migration only. No backfill. Deploy: set `SUPABASE_SERVICE_ROLE_KEY` in Wrangler secrets (and `.dev.vars` locally) before relying on public share in that environment; without it, share pages fail closed.
 
+**Addendum (impl):** `20260906130000_service_role_share_select.sql` grants **SELECT-only** on `share_links`, `user_assignments`, and `catalog_items` to `service_role`. Required because new Supabase `sb_secret_*` keys authenticate as `service_role` but do not inherit `authenticated` table privileges — without this, resolve fails with `42501`. No writes, no anon grants.
+
 ## References
 
 - PRD FR-008, NFRs, Access Control: `context/foundation/prd.md`

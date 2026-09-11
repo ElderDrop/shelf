@@ -1,7 +1,7 @@
 ---
 change_id: readonly-share-link
 title: Read-only share link for library and wishlist
-status: implemented
+status: impl_reviewed
 created: 2026-09-06
 updated: 2026-09-07
 archived_at: null

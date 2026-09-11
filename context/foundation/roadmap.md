@@ -32,7 +32,7 @@ Kolekcjoner mediów fizycznych nie ma jednego miejsca łączącego posiadane poz
 | F-01 | catalog-schema-rls | (foundation) minimal catalog schema, assignment tables, admin role, and RLS policies landed | — | NFR (access), Access Control | done |
 | S-01 | admin-catalog-approval | admin can manually create or edit catalog items and approve them so approved items appear in the user-facing catalog | F-01 | FR-001, FR-004, FR-006 | done |
 | S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | done |
-| S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | planning |
+| S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | out-of-scope |
 | S-04 | tag-recommendations | receive item recommendations based on tags or description of items in their library | S-02 | FR-007 | done |
 | S-05 | readonly-share-link | generate a read-only share link exposing library and wishlist without edit rights; recipient views without editing | S-02 | FR-008 | done |
 | S-06 | ui-polish | improve visual consistency and usability of admin and collector surfaces built in earlier slices | S-01 | — | done |
@@ -113,7 +113,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Google Books API quota without vs with API key in production — Owner: team. Block: no.
 - **Risk:** Books-only scope; ambiguous titles may return wrong volume (first-result policy); sync lookup may hit Worker time limits at scale — Queues deferred to a follow-up if needed.
-- **Status:** planning
+- **Status:** out-of-scope
 
 ### S-04: Tag and description recommendations
 
@@ -158,7 +158,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | F-01 | catalog-schema-rls | Catalog schema, assignments, admin role, and RLS | no | Done — archive with `/10x-archive catalog-schema-rls` |
 | S-01 | admin-catalog-approval | Admin manual catalog CRUD and approval workflow | no | After F-01 |
 | S-02 | catalog-search-assign | Search approved catalog, assign to library/wishlist, view collections | no | After S-01 |
-| S-03 | admin-metadata-enrichment | Admin automated metadata enrichment with review | yes | Google Books, books-only; run `/10x-implement admin-metadata-enrichment` |
+| S-03 | admin-metadata-enrichment | Admin automated metadata enrichment with review | no | Out of scope for current MVP |
 | S-04 | tag-recommendations | Simple tag/description overlap recommendations | yes | After S-02; run `/10x-implement tag-recommendations` |
 | S-05 | readonly-share-link | Read-only share link for library and wishlist | yes | After S-02; run `/10x-implement readonly-share-link` |
 | S-06 | ui-polish | Visual/UX polish for admin and collector surfaces | no | After S-01; prefer after more UI exists |
@@ -166,10 +166,11 @@ Foundations below assume these are present and do NOT re-scaffold them.
 ## Open Roadmap Questions
 
 1. **Wymierne progi NFR wydajności** — Owner: product owner. Block: roadmap-wide (no).
-2. **Google Books API key and production quota (FR-005 / S-03)** — Owner: team. Block: no (optional key; unkeyed OK for dev).
+2. **Google Books API key and production quota (FR-005 / S-03)** — Owner: team. Block: no — S-03 marked out-of-scope.
 
 ## Parked
 
+- **S-03 / FR-005 automated metadata enrichment** — Why parked: out of scope for current MVP; admin continues with manual catalog metadata.
 - **Znajomi / social graph** — Why parked: PRD §Non-Goals; solo collector focus for MVP.
 - **Widoczność per osoba lub grupa** — Why parked: PRD §Non-Goals; read-only link is sufficient for sharing.
 - **Obserwowanie cen i dostępności** — Why parked: PRD §Non-Goals; consciously deferred.

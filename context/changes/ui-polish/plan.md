@@ -294,16 +294,16 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Unit tests pass: `npm test`
-- [x] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — f4ccf2c
+- [x] 2.2 Unit tests pass: `npm test` — f4ccf2c
+- [x] 2.3 Build succeeds: `npm run build` — f4ccf2c
 
 #### Manual
 
-- [x] 2.4 Catalog, library, wishlist, recommendations, and share list rows share the same chrome; title hierarchy still distinguishes nested vs primary lists
-- [x] 2.5 Empty states on library/wishlist still link to catalog; catalog still distinguishes search vs empty
-- [x] 2.6 Assignment action errors and loading feedback are visible and consistent
-- [x] 2.7 Admin list/form inline errors match the shared error style
+- [x] 2.4 Catalog, library, wishlist, recommendations, and share list rows share the same chrome; title hierarchy still distinguishes nested vs primary lists — f4ccf2c
+- [x] 2.5 Empty states on library/wishlist still link to catalog; catalog still distinguishes search vs empty — f4ccf2c
+- [x] 2.6 Assignment action errors and loading feedback are visible and consistent — f4ccf2c
+- [x] 2.7 Admin list/form inline errors match the shared error style — f4ccf2c
 
 ### Phase 3: Auth zinc pass
 
@@ -315,9 +315,9 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 
 #### Manual
 
-- [ ] 3.4 Sign-in, sign-up, and confirm-email pages match zinc product chrome (no purple orbs / cosmic gradient)
-- [ ] 3.5 Sign-in and sign-up still validate and authenticate successfully
-- [ ] 3.6 Field errors and server errors remain readable on the dark zinc background
+- [x] 3.4 Sign-in, sign-up, and confirm-email pages match zinc product chrome (no purple orbs / cosmic gradient)
+- [x] 3.5 Sign-in and sign-up still validate and authenticate successfully
+- [x] 3.6 Field errors and server errors remain readable on the dark zinc background
 
 ### Phase 4: Home page capability landing and dashboard branding
 

@@ -1,0 +1,31 @@
+---
+interface Props {
+  title?: string;
+  description?: string | null;
+  tags?: string[];
+  /** Primary lists use h2/lg; nested sections (recs, share) use h3/base. */
+  titleAs?: "h2" | "h3";
+  unavailable?: boolean;
+}
+
+const { title = "", description = null, tags = [], titleAs = "h2", unavailable = false } = Astro.props;
+
+// Meta-only (no slot): React islands must stay on the page as siblings —
+// nesting client:* components through an Astro slot drops hydration.
+
+const titleClass = titleAs === "h3" ? "text-base font-medium text-foreground" : "text-lg font-medium text-foreground";
+---
+
+{
+  unavailable ? (
+    <p class="text-muted-foreground text-sm">This item is no longer available in the catalog.</p>
+  ) : (
+    <>
+      {titleAs === "h3" ? <h3 class:list={[titleClass]}>{title}</h3> : <h2 class:list={[titleClass]}>{title}</h2>}
+      {description ? <p class="text-foreground/80 mt-2 text-sm leading-relaxed">{description}</p> : null}
+      {tags.length > 0 ? (
+        <p class="text-muted-foreground mt-3 text-xs tracking-wide uppercase">{tags.join(" · ")}</p>
+      ) : null}
+    </>
+  )
+}

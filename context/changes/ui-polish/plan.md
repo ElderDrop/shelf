@@ -279,39 +279,39 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Unit tests pass: `npm test`
-- [x] 1.3 Build succeeds: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — 1f2944e
+- [x] 1.2 Unit tests pass: `npm test` — 1f2944e
+- [x] 1.3 Build succeeds: `npm run build` — 1f2944e
 
 #### Manual
 
-- [x] 1.4 Topbar shows a Shelf brand label for signed-in and signed-out users
-- [x] 1.5 Default / product page `<title>` values no longer say “10x Astro Starter”
-- [x] 1.6 Catalog, library, wishlist, admin, share, and 403 shells look visually aligned (padding, width, heading weight)
-- [x] 1.7 No regressions in nav links or auth gating
+- [x] 1.4 Topbar shows a Shelf brand label for signed-in and signed-out users — 1f2944e
+- [x] 1.5 Default / product page `<title>` values no longer say “10x Astro Starter” — 1f2944e
+- [x] 1.6 Catalog, library, wishlist, admin, share, and 403 shells look visually aligned (padding, width, heading weight) — 1f2944e
+- [x] 1.7 No regressions in nav links or auth gating — 1f2944e
 
 ### Phase 2: Shared media item row and empty/error/loading helpers
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Unit tests pass: `npm test`
-- [ ] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Unit tests pass: `npm test`
+- [x] 2.3 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Catalog, library, wishlist, recommendations, and share list rows share the same chrome; title hierarchy still distinguishes nested vs primary lists
-- [ ] 2.5 Empty states on library/wishlist still link to catalog; catalog still distinguishes search vs empty
-- [ ] 2.6 Assignment action errors and loading feedback are visible and consistent
-- [ ] 2.7 Admin list/form inline errors match the shared error style
+- [x] 2.4 Catalog, library, wishlist, recommendations, and share list rows share the same chrome; title hierarchy still distinguishes nested vs primary lists
+- [x] 2.5 Empty states on library/wishlist still link to catalog; catalog still distinguishes search vs empty
+- [x] 2.6 Assignment action errors and loading feedback are visible and consistent
+- [x] 2.7 Admin list/form inline errors match the shared error style
 
 ### Phase 3: Auth zinc pass
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Unit tests pass: `npm test`
-- [ ] 3.3 Build succeeds: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Unit tests pass: `npm test`
+- [x] 3.3 Build succeeds: `npm run build`
 
 #### Manual
 

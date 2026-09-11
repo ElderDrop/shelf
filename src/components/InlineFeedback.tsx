@@ -11,6 +11,16 @@ export function InlineError({ children, className }: InlineErrorProps) {
   return <p className={cn("text-destructive text-sm", className)}>{children}</p>;
 }
 
+interface EmptyCopyProps {
+  children: ReactNode;
+  className?: string;
+}
+
+/** React twin of EmptyState.astro — muted empty-list copy. */
+export function EmptyCopy({ children, className }: EmptyCopyProps) {
+  return <p className={cn("text-muted-foreground text-sm", className)}>{children}</p>;
+}
+
 interface LoadingLabelProps {
   children?: ReactNode;
   className?: string;

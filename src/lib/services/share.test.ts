@@ -226,7 +226,7 @@ describe("resolveShareByToken", () => {
     expect(eqs.some((c) => c.args[0] === "catalog_items.status" && c.args[1] === "approved")).toBe(true);
 
     const selects = callsNamed(calls, "select");
-    const linkSelect = selects.find((c) => typeof c.args[0] === "string" && String(c.args[0]).includes("token_hash"));
+    const linkSelect = selects.find((c) => typeof c.args[0] === "string" && c.args[0].includes("token_hash"));
     expect(linkSelect?.args[0]).toBe("id, user_id, token_hash, created_at");
     expect(String(linkSelect?.args[0])).not.toMatch(/(^|[,\s])token([,\s]|$)/);
   });

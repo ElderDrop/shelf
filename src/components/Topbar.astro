@@ -1,51 +1,58 @@
 ---
 const { user, profile } = Astro.locals;
 const isAdmin = profile?.role === "admin";
+const brandHref = user ? "/library" : "/";
 ---
 
 <nav class="w-full border-b border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100">
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between gap-4">
+    <div class="flex min-w-0 items-center gap-3">
+      <a href={brandHref} class="shrink-0 font-semibold tracking-tight text-zinc-50 transition-colors hover:text-white">
+        Shelf
+      </a>
+      {
+        user ? (
+          <span class="truncate text-zinc-500">{user.email}</span>
+        ) : (
+          <span class="text-zinc-500">Not signed in</span>
+        )
+      }
+    </div>
     {
       user ? (
-        <>
-          <span class="truncate text-zinc-400">{user.email}</span>
-          <div class="flex items-center gap-4">
-            <a href="/catalog" class="text-zinc-200 transition-colors hover:text-white hover:underline">
-              Catalog
+        <div class="flex shrink-0 items-center gap-4">
+          <a href="/catalog" class="text-zinc-200 transition-colors hover:text-white hover:underline">
+            Catalog
+          </a>
+          <a href="/library" class="text-zinc-200 transition-colors hover:text-white hover:underline">
+            Library
+          </a>
+          <a href="/wishlist" class="text-zinc-200 transition-colors hover:text-white hover:underline">
+            Wishlist
+          </a>
+          <a href="/dashboard" class="text-zinc-200 transition-colors hover:text-white hover:underline">
+            Dashboard
+          </a>
+          {isAdmin ? (
+            <a href="/admin/catalog" class="text-zinc-200 transition-colors hover:text-white hover:underline">
+              Admin
             </a>
-            <a href="/library" class="text-zinc-200 transition-colors hover:text-white hover:underline">
-              Library
-            </a>
-            <a href="/wishlist" class="text-zinc-200 transition-colors hover:text-white hover:underline">
-              Wishlist
-            </a>
-            <a href="/dashboard" class="text-zinc-200 transition-colors hover:text-white hover:underline">
-              Dashboard
-            </a>
-            {isAdmin ? (
-              <a href="/admin/catalog" class="text-zinc-200 transition-colors hover:text-white hover:underline">
-                Admin
-              </a>
-            ) : null}
-            <form method="POST" action="/api/auth/signout">
-              <button type="submit" class="text-zinc-200 transition-colors hover:text-white hover:underline">
-                Sign out
-              </button>
-            </form>
-          </div>
-        </>
+          ) : null}
+          <form method="POST" action="/api/auth/signout">
+            <button type="submit" class="text-zinc-200 transition-colors hover:text-white hover:underline">
+              Sign out
+            </button>
+          </form>
+        </div>
       ) : (
-        <>
-          <span class="text-zinc-500">Not signed in</span>
-          <div class="flex gap-4">
-            <a href="/auth/signin" class="text-zinc-200 transition-colors hover:text-white hover:underline">
-              Sign in
-            </a>
-            <a href="/auth/signup" class="text-zinc-200 transition-colors hover:text-white hover:underline">
-              Sign up
-            </a>
-          </div>
-        </>
+        <div class="flex shrink-0 gap-4">
+          <a href="/auth/signin" class="text-zinc-200 transition-colors hover:text-white hover:underline">
+            Sign in
+          </a>
+          <a href="/auth/signup" class="text-zinc-200 transition-colors hover:text-white hover:underline">
+            Sign up
+          </a>
+        </div>
       )
     }
   </div>

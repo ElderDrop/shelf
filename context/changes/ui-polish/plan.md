@@ -2,29 +2,29 @@
 
 ## Overview
 
-Unify Shelf onto the existing zinc product look across shared chrome, collector/admin surfaces, and auth — without new features or a visual redesign. Extract shared list-item and empty/error helpers so spacing and hierarchy stop drifting; apply a light zinc pass to auth shells; replace the starter home page with a minimal Shelf landing that briefly describes what users can do on the site; treat dashboard branding as the last, cuttable piece.
+Unify Shelf onto one product look across shared chrome, collector/admin surfaces, and auth — without new features or a marketing redesign. Extract shared list-item and empty/error helpers so spacing and hierarchy stop drifting; bring auth shells onto the same light Shelf palette; replace the starter home page with a minimal Shelf landing that briefly describes what users can do on the site; treat dashboard branding as the last, cuttable piece.
 
 ## Current State Analysis
 
-Product flows (catalog, library, wishlist, admin, share, 403) already use hard-coded zinc (`bg-zinc-950`, `border-zinc-800`, muted zinc text). Auth, landing (`Welcome.astro`), and dashboard still use the starter cosmic/purple language. Layout default title is still “10x Astro Starter”; Topbar has no product name. Media list rows are copy-pasted across five surfaces with `h2`/`h3` title drift. Empty, error, and loading feedback exist but are inconsistent (assignment actions disable with no label; share empties have no CTAs). Prior slices deferred polish to S-06 and locked zinc for product UI. Enabling `class="dark"` on `<html>` is a separate token migration — leave CSS variables alone for this change.
+*(Historical — as of plan authoring.)* Product flows (catalog, library, wishlist, admin, share, 403) used hard-coded zinc (`bg-zinc-950`, `border-zinc-800`, muted zinc text). Auth, landing (`Welcome.astro`), and dashboard still used the starter cosmic/purple language. Layout default title was still “10x Astro Starter”; Topbar had no product name. Media list rows were copy-pasted across five surfaces with `h2`/`h3` title drift. Empty, error, and loading feedback existed but were inconsistent. Prior slices deferred polish to S-06 and locked zinc for product UI. Mid-implementation, the accepted visual system became a light brown/beige/white/black palette via semantic CSS tokens (see Addendum).
 
 ## Desired End State
 
-A signed-in collector and admin experience that reads as one zinc app: consistent page shells, one media-item row pattern, shared empty/error/loading affordances, Topbar/Layout branded as Shelf, and auth screens that no longer clash with purple/cosmic chrome. The public home page (`/`) is a zinc Shelf landing that briefly explains site capabilities (catalog → library/wishlist, recommendations, read-only share) with clear CTAs. Dashboard either becomes a thin zinc hub or remains deferred if that piece is cut. No pagination, no new palette/fonts, no shadcn Empty/Skeleton/Alert package rollout.
+A signed-in collector and admin experience that reads as one Shelf app on a light parchment / white / walnut palette: consistent page shells (`shelf-page` / semantic tokens), one media-item row pattern, shared empty/error/loading affordances, Topbar/Layout branded as Shelf, and auth screens that no longer clash with purple/cosmic chrome. The public home page (`/`) is a Shelf landing that briefly explains site capabilities (catalog → library/wishlist, recommendations, read-only share) with clear CTAs. Dashboard either becomes a thin hub or remains deferred if that piece is cut. No pagination, no custom fonts, no shadcn Empty/Skeleton/Alert package rollout.
 
 ### Key Discoveries:
 
 - Canonical list-item chrome is already shared by accident across `catalog.astro`, `library.astro`, `wishlist.astro`, and `share/[token].astro` — extract, don’t redesign
 - Auth forms (`SignInForm` / `SignUpForm`) are structure-only; purple lives in page shells + `FormField` / `SubmitButton` / `PasswordToggle` class strings
-- shadcn light `:root` tokens apply under Layout while product pages paint zinc by hand — do not flip `.dark` in this change
+- Product UI should use semantic tokens (`background`, `card`, `primary`, `shelf-page`) rather than hard-coded zinc utilities; do not flip `<html class="dark">` for this change
 - Roadmap S-06 explicitly risks redesign creep; pagination/truncation UI stays out (deferred from S-01 reviews)
 
 ## What We're NOT Doing
 
 - New product features, APIs, or schema changes
 - Pagination or truncated-list affordances for the PostgREST row cap
-- Custom Shelf brand palette, custom fonts, or a full marketing redesign (home may list capabilities briefly — not a campaign site)
-- Enabling `class="dark"` / migrating hard-coded zinc to semantic tokens
+- Custom fonts or a full marketing redesign (home may list capabilities briefly — not a campaign site)
+- Enabling `class="dark"` on `<html>`
 - Installing and wiring full shadcn Alert / Empty / Skeleton / Dialog suites
 - Rebuilding auth validation or switching auth to admin’s Card+form stack
 - Visual regression / Playwright snapshot suite (parked in test-plan until after S-06)
@@ -32,7 +32,7 @@ A signed-in collector and admin experience that reads as one zinc app: consisten
 
 ## Implementation Approach
 
-Work outside-in: chrome first so every surface inherits brand and shell consistency, then extract shared collector primitives and apply them to list pages/islands, then class-swap auth to zinc, then replace the starter home with a capability-brief Shelf landing (dashboard hub optional/cuttable). Prefer small Astro/React helpers over new design-system packages. Keep admin Card+Table presentation; unify collector border-b lists only.
+Work outside-in: chrome first so every surface inherits brand and shell consistency, then extract shared collector primitives and apply them to list pages/islands, then class-swap auth onto the light Shelf palette, then replace the starter home with a capability-brief Shelf landing (dashboard hub optional/cuttable). Prefer small Astro/React helpers over new design-system packages. Keep admin Card+Table presentation; unify collector border-b lists only.
 
 ## Phase 1: Shared chrome and page shell consistency
 
@@ -186,9 +186,9 @@ Restyle auth page shells and shared auth field chrome to zinc so sign-in/sign-up
 
 #### Manual Verification:
 
-- Sign-in, sign-up, and confirm-email pages match zinc product chrome (no purple orbs / cosmic gradient)
+- Sign-in, sign-up, and confirm-email pages match light Shelf product chrome (no purple orbs / cosmic gradient)
 - Sign-in and sign-up still validate and authenticate successfully
-- Field errors and server errors remain readable on the dark zinc background
+- Field errors and server errors remain readable on the light Shelf background
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
@@ -230,7 +230,7 @@ Replace the starter home with a minimal zinc Shelf landing that briefly describe
 
 - `/` presents as Shelf (not the Astro starter) and briefly describes catalog/library/wishlist, recommendations, and read-only sharing
 - Signed-out and signed-in primary paths from landing still work (sign-in/sign-up and/or catalog)
-- Dashboard is either a useful zinc hub, cleanly redirects with Topbar matched, or explicitly deferred if cut
+- Dashboard is either a useful light Shelf hub, cleanly redirects with Topbar matched, or explicitly deferred if cut
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful. If only the dashboard piece is cut, leave home shipped and note dashboard debt.
 
@@ -249,7 +249,7 @@ Replace the starter home with a minimal zinc Shelf landing that briefly describe
 
 ### Manual Testing Steps:
 
-1. Walk signed-out: home capability copy readable, then sign-up, confirm copy, sign-in — zinc chrome, working auth.
+1. Walk signed-out: home capability copy readable, then sign-up, confirm copy, sign-in — light Shelf chrome, working auth.
 2. Walk signed-in: Topbar brand + Catalog / Library / Wishlist / Admin (if admin) — shell consistency, empty and non-empty lists, assignment loading/errors.
 3. Open share link as signed-out recipient — row chrome matches, no edit controls.
 4. Spot-check 403 and admin not-found link styles.
@@ -271,6 +271,16 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 - Shared utilities: `src/lib/utils.ts` (`cn`)
 - Chrome: `src/layouts/Layout.astro`, `src/components/Topbar.astro`
 
+## Addendum — Light palette + semantic tokens (2026-09-12)
+
+Accepted mid-implementation (user request; also in `change.md` Notes): replace the original zinc-locked product look with a light brown / beige / white / black system — parchment `background`, white `card`, near-black `foreground`, walnut `primary` — via `src/styles/global.css` tokens and `shelf-page` / `shelf-panel` utilities. Product, auth, home, and dashboard use semantic classes. This supersedes the plan’s earlier “no custom palette / leave CSS tokens alone / hard-coded zinc only” guardrails. Enabling `<html class="dark">` remains out of scope.
+
+Phase automated lint for this change used `npx eslint "src/**/*.{ts,tsx,astro}"` because full `npm run lint` fails on pre-existing issues in `packages/code-review-agent/` (out of slice).
+
+## Addendum — MediaItemRow sibling islands (2026-09-12)
+
+Phase 2’s planned contract (row owns list chrome + trailing actions slot/children) was abandoned: nesting `client:*` React islands inside an Astro slot drops hydration. Shipped contract: `MediaItemRow.astro` is meta-only (title / description / tags / unavailable); parent pages own the `<li>` chrome and render action islands as **siblings** of the row (prefer `client:only="react"` for assignment islands). `Badge` must import `Slot` from `@radix-ui/react-slot` (not `radix-ui`) or catalog action islands fail under Vite. Same rule is recorded in `change.md` Notes.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
@@ -279,7 +289,7 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint` — 1f2944e
+- [x] 1.1 Lint passes: `npx eslint "src/**/*.{ts,tsx,astro}"` (src gate; full `npm run lint` still fails in unrelated `packages/code-review-agent`) — 1f2944e
 - [x] 1.2 Unit tests pass: `npm test` — 1f2944e
 - [x] 1.3 Build succeeds: `npm run build` — 1f2944e
 
@@ -294,7 +304,7 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint` — f4ccf2c
+- [x] 2.1 Lint passes: `npx eslint "src/**/*.{ts,tsx,astro}"` (src gate; full `npm run lint` still fails in unrelated `packages/code-review-agent`) — f4ccf2c
 - [x] 2.2 Unit tests pass: `npm test` — f4ccf2c
 - [x] 2.3 Build succeeds: `npm run build` — f4ccf2c
 
@@ -309,21 +319,21 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint` — cbd3fad
+- [x] 3.1 Lint passes: `npx eslint "src/**/*.{ts,tsx,astro}"` (src gate; full `npm run lint` still fails in unrelated `packages/code-review-agent`) — cbd3fad
 - [x] 3.2 Unit tests pass: `npm test` — cbd3fad
 - [x] 3.3 Build succeeds: `npm run build` — cbd3fad
 
 #### Manual
 
-- [x] 3.4 Sign-in, sign-up, and confirm-email pages match zinc product chrome (no purple orbs / cosmic gradient) — cbd3fad
+- [x] 3.4 Sign-in, sign-up, and confirm-email pages match light Shelf product chrome (no purple orbs / cosmic gradient) — cbd3fad
 - [x] 3.5 Sign-in and sign-up still validate and authenticate successfully — cbd3fad
-- [x] 3.6 Field errors and server errors remain readable on the dark zinc background — cbd3fad
+- [x] 3.6 Field errors and server errors remain readable on the light Shelf background — cbd3fad
 
 ### Phase 4: Home page capability landing and dashboard branding
 
 #### Automated
 
-- [x] 4.1 Lint passes: `npm run lint` — 3d499c6
+- [x] 4.1 Lint passes: `npx eslint "src/**/*.{ts,tsx,astro}"` (src gate; full `npm run lint` still fails in unrelated `packages/code-review-agent`) — 3d499c6
 - [x] 4.2 Unit tests pass: `npm test` — 3d499c6
 - [x] 4.3 Build succeeds: `npm run build` — 3d499c6
 
@@ -331,4 +341,4 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 
 - [x] 4.4 `/` presents as Shelf and briefly describes catalog/library/wishlist, recommendations, and read-only sharing — 3d499c6
 - [x] 4.5 Signed-out and signed-in primary paths from landing still work — 3d499c6
-- [x] 4.6 Dashboard is either a useful zinc hub, cleanly redirects with Topbar matched, or explicitly deferred if cut — 3d499c6
+- [x] 4.6 Dashboard is either a useful light Shelf hub, cleanly redirects with Topbar matched, or explicitly deferred if cut — 3d499c6

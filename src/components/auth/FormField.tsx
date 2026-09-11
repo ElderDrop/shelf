@@ -48,7 +48,11 @@ export function FormField({
             onChange(e.target.value);
           }}
           placeholder={placeholder}
-          className={cn(inputBase, error ? "border-destructive focus:ring-destructive" : null)}
+          className={cn(
+            inputBase,
+            endContent ? "pr-10" : null,
+            error ? "border-destructive focus:ring-destructive" : null,
+          )}
         />
         {endContent}
       </div>

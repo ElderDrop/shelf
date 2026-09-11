@@ -1,6 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import CollectionItemActions from "@/components/collection/CollectionItemActions";
+import EmptyState from "@/components/EmptyState.astro";
+import MediaItemRow from "@/components/collection/MediaItemRow.astro";
 import { createClient } from "@/lib/supabase";
 import { listForUser } from "@/lib/services/assignments";
 
@@ -20,7 +22,7 @@ if (!supabase) {
 {
   configError ? (
     <Layout title="Shelf — Configuration error">
-      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
+      <main class="shelf-page">
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Supabase is not configured</h1>
         </div>
@@ -28,54 +30,38 @@ if (!supabase) {
     </Layout>
   ) : (
     <Layout title="Shelf — Wishlist">
-      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
+      <main class="shelf-page">
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Wishlist</h1>
-          <p class="mt-1 text-sm text-zinc-400">Items you want to pick up later.</p>
+          <p class="text-muted-foreground mt-1 text-sm">Items you want to pick up later.</p>
 
           {assignments.length === 0 ? (
-            <p class="mt-10 text-sm text-zinc-400">
+            <EmptyState>
               Your wishlist is empty. Browse the{" "}
-              <a href="/catalog" class="text-zinc-200 underline hover:text-white">
+              <a href="/catalog" class="text-primary hover:text-foreground underline">
                 catalog
               </a>{" "}
               to add items.
-            </p>
+            </EmptyState>
           ) : (
             <ul class="mt-8 space-y-6">
               {assignments.map((assignment) => {
                 const item = assignment.catalog_item;
                 const unavailable = item == null;
                 return (
-                  <li class="border-b border-zinc-800 pb-6 last:border-b-0">
+                  <li class="border-border border-b pb-6 last:border-b-0">
                     {unavailable ? (
-                      <>
-                        <p class="text-sm text-zinc-400">This item is no longer available in the catalog.</p>
-                        <CollectionItemActions
-                          client:only="react"
-                          assignmentId={assignment.id}
-                          catalogItemId={assignment.catalog_item_id}
-                          listType="wishlist"
-                          unavailable
-                        />
-                      </>
+                      <MediaItemRow unavailable />
                     ) : (
-                      <>
-                        <h2 class="text-lg font-medium text-zinc-50">{item.title}</h2>
-                        {item.description ? (
-                          <p class="mt-2 text-sm leading-relaxed text-zinc-300">{item.description}</p>
-                        ) : null}
-                        {item.tags.length > 0 ? (
-                          <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">{item.tags.join(" · ")}</p>
-                        ) : null}
-                        <CollectionItemActions
-                          client:only="react"
-                          assignmentId={assignment.id}
-                          catalogItemId={assignment.catalog_item_id}
-                          listType="wishlist"
-                        />
-                      </>
+                      <MediaItemRow title={item.title} description={item.description} tags={item.tags} />
                     )}
+                    <CollectionItemActions
+                      client:only="react"
+                      assignmentId={assignment.id}
+                      catalogItemId={assignment.catalog_item_id}
+                      listType="wishlist"
+                      unavailable={unavailable}
+                    />
                   </li>
                 );
               })}

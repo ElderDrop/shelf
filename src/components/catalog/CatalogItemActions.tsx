@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { InlineError, LoadingLabel } from "@/components/InlineFeedback";
 import { useAssignmentActions } from "@/components/hooks/useAssignmentActions";
 import type { ListType } from "@/types";
 
@@ -73,7 +74,8 @@ export default function CatalogItemActions({ catalogItemId, listType, assignment
           </Button>
         </>
       )}
-      {error ? <p className="w-full text-sm text-red-400">{error}</p> : null}
+      {loading ? <LoadingLabel className="w-full" /> : null}
+      {error ? <InlineError className="w-full">{error}</InlineError> : null}
     </div>
   );
 }

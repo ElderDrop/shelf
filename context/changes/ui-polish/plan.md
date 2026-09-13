@@ -323,12 +323,12 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 
 #### Automated
 
-- [x] 4.1 Lint passes: `npm run lint` — 3d499c6
-- [x] 4.2 Unit tests pass: `npm test` — 3d499c6
-- [x] 4.3 Build succeeds: `npm run build` — 3d499c6
+- [x] 4.1 Lint passes: `npm run lint`
+- [x] 4.2 Unit tests pass: `npm test`
+- [x] 4.3 Build succeeds: `npm run build`
 
 #### Manual
 
-- [x] 4.4 `/` presents as Shelf and briefly describes catalog/library/wishlist, recommendations, and read-only sharing — 3d499c6
-- [x] 4.5 Signed-out and signed-in primary paths from landing still work — 3d499c6
-- [x] 4.6 Dashboard is either a useful zinc hub, cleanly redirects with Topbar matched, or explicitly deferred if cut — 3d499c6
+- [x] 4.4 `/` presents as Shelf and briefly describes catalog/library/wishlist, recommendations, and read-only sharing
+- [x] 4.5 Signed-out and signed-in primary paths from landing still work
+- [x] 4.6 Dashboard is either a useful zinc hub, cleanly redirects with Topbar matched, or explicitly deferred if cut

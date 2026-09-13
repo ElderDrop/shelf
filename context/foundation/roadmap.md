@@ -3,7 +3,7 @@ project: Shelf
 version: 1
 status: draft
 created: 2026-06-07
-updated: 2026-09-11
+updated: 2026-08-30
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -34,8 +34,8 @@ Kolekcjoner mediów fizycznych nie ma jednego miejsca łączącego posiadane poz
 | S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | done |
 | S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | out-of-scope |
 | S-04 | tag-recommendations | receive item recommendations based on tags or description of items in their library | S-02 | FR-007 | done |
-| S-05 | readonly-share-link | generate a read-only share link exposing library and wishlist without edit rights; recipient views without editing | S-02 | FR-008 | done |
-| S-06 | ui-polish | improve visual consistency and usability of admin and collector surfaces built in earlier slices | S-01 | — | in-progress |
+| S-05 | readonly-share-link | generate a read-only share link exposing library and wishlist without edit rights; recipient views without editing | S-02 | FR-008 | proposed |
+| S-06 | ui-polish | improve visual consistency and usability of admin and collector surfaces built in earlier slices | S-01 | — | proposed |
 
 ## Streams
 
@@ -137,7 +137,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Privacy guardrail (no edit via link) is the load-bearing constraint; parallel with recommendations to close the must-have path quickly under time pressure.
-- **Status:** done
+- **Status:** proposed
 
 ### S-06: UI polish
 
@@ -149,7 +149,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Easy to expand into a redesign; keep scoped to polish of shipped flows. Sequenced after the north star so MVP speed is not blocked by visual work.
-- **Status:** in-progress
+- **Status:** proposed
 
 ## Backlog Handoff
 
@@ -160,7 +160,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-02 | catalog-search-assign | Search approved catalog, assign to library/wishlist, view collections | no | After S-01 |
 | S-03 | admin-metadata-enrichment | Admin automated metadata enrichment with review | no | Out of scope for current MVP |
 | S-04 | tag-recommendations | Simple tag/description overlap recommendations | yes | After S-02; run `/10x-implement tag-recommendations` |
-| S-05 | readonly-share-link | Read-only share link for library and wishlist | yes | After S-02; run `/10x-implement readonly-share-link` |
+| S-05 | readonly-share-link | Read-only share link for library and wishlist | no | After S-02 |
 | S-06 | ui-polish | Visual/UX polish for admin and collector surfaces | no | After S-01; prefer after more UI exists |
 
 ## Open Roadmap Questions
@@ -183,4 +183,3 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-02: user can search the approved catalog and assign items to library or wishlist; user can view their library and wishlist with title, description, and tags.** — Archived 2026-08-24 → `context/archive/2026-08-23-catalog-search-assign/`. Lesson: —.
 - **S-04: user can receive item recommendations based on tags or description of items in their library.** — Archived 2026-08-30 → `context/archive/2026-08-24-tag-recommendations/`. Lesson: —.
 - **S-01: admin can manually create or edit catalog items and approve them so approved items become visible in the user-facing catalog.** — Archived 2026-08-30 → `context/archive/2026-08-17-admin-catalog-approval/`. Lesson: —.
-- **S-05: user can generate a read-only share link exposing library and wishlist without edit rights; link recipient can view library and wishlist without editing.** — Archived 2026-09-11 → `context/archive/2026-09-06-readonly-share-link/`. Lesson: —.

@@ -309,26 +309,26 @@ No data migration. Safe to ship phase-by-phase; each phase is independently rele
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint` — cbd3fad
-- [x] 3.2 Unit tests pass: `npm test` — cbd3fad
-- [x] 3.3 Build succeeds: `npm run build` — cbd3fad
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Unit tests pass: `npm test`
+- [x] 3.3 Build succeeds: `npm run build`
 
 #### Manual
 
-- [x] 3.4 Sign-in, sign-up, and confirm-email pages match zinc product chrome (no purple orbs / cosmic gradient) — cbd3fad
-- [x] 3.5 Sign-in and sign-up still validate and authenticate successfully — cbd3fad
-- [x] 3.6 Field errors and server errors remain readable on the dark zinc background — cbd3fad
+- [x] 3.4 Sign-in, sign-up, and confirm-email pages match zinc product chrome (no purple orbs / cosmic gradient)
+- [x] 3.5 Sign-in and sign-up still validate and authenticate successfully
+- [x] 3.6 Field errors and server errors remain readable on the dark zinc background
 
 ### Phase 4: Home page capability landing and dashboard branding
 
 #### Automated
 
-- [x] 4.1 Lint passes: `npm run lint`
-- [x] 4.2 Unit tests pass: `npm test`
-- [x] 4.3 Build succeeds: `npm run build`
+- [ ] 4.1 Lint passes: `npm run lint`
+- [ ] 4.2 Unit tests pass: `npm test`
+- [ ] 4.3 Build succeeds: `npm run build`
 
 #### Manual
 
-- [x] 4.4 `/` presents as Shelf and briefly describes catalog/library/wishlist, recommendations, and read-only sharing
-- [x] 4.5 Signed-out and signed-in primary paths from landing still work
-- [x] 4.6 Dashboard is either a useful zinc hub, cleanly redirects with Topbar matched, or explicitly deferred if cut
+- [ ] 4.4 `/` presents as Shelf and briefly describes catalog/library/wishlist, recommendations, and read-only sharing
+- [ ] 4.5 Signed-out and signed-in primary paths from landing still work
+- [ ] 4.6 Dashboard is either a useful zinc hub, cleanly redirects with Topbar matched, or explicitly deferred if cut

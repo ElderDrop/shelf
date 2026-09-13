@@ -3,8 +3,8 @@ import Layout from "@/layouts/Layout.astro";
 import CatalogForm from "@/components/admin/CatalogForm";
 ---
 
-<Layout title="Shelf — New catalog item">
-  <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
+<Layout title="New catalog item">
+  <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 sm:p-8">
     <CatalogForm client:load mode="create" />
   </main>
 </Layout>

@@ -1,9 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import SignInForm from "@/components/auth/SignInForm";
-import { resolveAuthErrorMessage } from "@/lib/auth-errors";
 
-const error = resolveAuthErrorMessage(Astro.url.searchParams.get("error"));
+const error = Astro.url.searchParams.get("error");
 ---
 
 <Layout title="Shelf — Sign in">

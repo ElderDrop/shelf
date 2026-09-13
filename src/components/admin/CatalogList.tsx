@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { InlineError, LoadingLabel, EmptyCopy } from "@/components/InlineFeedback";
+import { InlineError, LoadingLabel } from "@/components/InlineFeedback";
 import type { ApiErrorBody } from "@/lib/api-response";
 
 type FilterValue = "all" | CatalogStatus;
@@ -108,7 +108,7 @@ export default function CatalogList({ initialItems }: Props) {
         {error ? <InlineError className="mb-4">{error}</InlineError> : null}
         {actionsDisabled ? <LoadingLabel className="mb-4">Updating…</LoadingLabel> : null}
         {items.length === 0 ? (
-          <EmptyCopy>No catalog items for this filter.</EmptyCopy>
+          <p className="text-muted-foreground text-sm">No catalog items for this filter.</p>
         ) : (
           <Table>
             <TableHeader>

@@ -1,10 +1,10 @@
 ---
 change_id: ui-polish
 title: Ui polish
-status: archived
+status: impl_reviewed
 created: 2026-09-11
-updated: 2026-09-11
-archived_at: 2026-09-11T23:18:49Z
+updated: 2026-09-12
+archived_at: null
 ---
 
 ## Notes

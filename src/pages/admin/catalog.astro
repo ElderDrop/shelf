@@ -20,7 +20,7 @@ if (!supabase) {
 {
   configError ? (
     <Layout title="Shelf — Configuration error">
-      <main class="shelf-page">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Supabase is not configured</h1>
         </div>
@@ -28,7 +28,7 @@ if (!supabase) {
     </Layout>
   ) : (
     <Layout title="Shelf — Admin catalog">
-      <main class="shelf-page">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
         <div class="mx-auto max-w-5xl">
           <CatalogList client:load initialItems={items} />
         </div>

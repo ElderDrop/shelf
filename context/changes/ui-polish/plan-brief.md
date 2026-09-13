@@ -19,23 +19,23 @@ Collectors and admins see consistent zinc chrome, shared media rows, and coheren
 | Decision | Choice | Why (1 sentence) |
 | --- | --- | --- |
 | Surface scope | Product + chrome + starter leftovers; auth light pass | Fixes dual-theme jank without a full redesign |
-| Visual system | Light brown / beige / white / black | User-chosen light mode; semantic tokens replace zinc |
-| Landing/dashboard | Capability brief + CTAs (expected) | Visitors understand what Shelf does without a marketing redesign |
+| Visual system | Zinc as product system | Matches prior slices; avoids new brand palette |
+| Home page | Capability brief + CTAs (expected) | Visitors understand what Shelf does without a marketing redesign |
 | Dashboard | Secondary / cuttable within Phase 4 | Lower traffic than home; cut first if time is tight |
-| Auth | Class-level pass onto light Shelf tokens (Phase 3) | Ends cosmic clash with low risk |
+| Auth | Class-level zinc pass, not rebuild | Ends purple clash with low risk |
 | Empty/error/loading | Shared helpers + light pending labels | Usability without Skeleton/Alert package sprawl |
 | List chrome | Extract shared media item row | Stops h2/h3 and markup drift |
 | Pagination | Out of scope | Avoids feature creep called out in roadmap |
 
 ## Scope
 
-**In scope:** Layout/Topbar Shelf branding; light brown/beige/white/black product tokens; shared media row; empty/error/loading helpers; auth restyle onto same tokens; home capability landing; optional dashboard hub.
+**In scope:** Layout/Topbar Shelf branding; product page shell alignment; shared media row; empty/error/loading helpers; auth zinc restyle; home capability landing; optional dashboard hub.
 
-**Out of scope:** Pagination/truncation UI; custom fonts; campaign-style marketing redesign; full shadcn Empty/Skeleton/Alert rollout; new features/APIs; visual snapshot suite.
+**Out of scope:** Pagination/truncation UI; custom fonts/palette; `.dark` token migration; full shadcn Empty/Skeleton/Alert rollout; campaign-style marketing redesign; new features/APIs; visual snapshot suite.
 
 ## Architecture / Approach
 
-Semantic tokens in `global.css` drive product UI (`background` parchment, `card` white, `foreground` near-black, `primary` walnut). Pages use `shelf-page` / `shelf-panel`; React islands stay page-level siblings of `MediaItemRow` (no slot nesting). Auth/home still cosmic until Phases 3–4.
+Harden zinc in place. Prefer Astro for SSR list chrome; keep existing React action islands as slots. Class-swap auth shells/fields. Leave `global.css` semantic tokens alone — product UI already paints zinc utilities. Home is short prose/bullets of MVP capabilities, not a feature-card marketing system.
 
 ## Phases at a Glance
 

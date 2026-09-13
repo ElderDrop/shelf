@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { InlineError } from "@/components/InlineFeedback";
 import { useCatalogForm } from "@/components/hooks/useCatalogForm";
 
 interface Props {
@@ -37,7 +36,7 @@ export default function CatalogForm({ mode, item }: Props) {
   }
 
   return (
-    <Card className="mx-auto max-w-2xl">
+    <Card className="mx-auto max-w-2xl border-zinc-800 bg-zinc-950 text-zinc-100">
       <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
         <CardTitle className="text-xl">{mode === "create" ? "New catalog item" : "Edit catalog item"}</CardTitle>
         {item ? <Badge variant="secondary">{item.status}</Badge> : null}
@@ -61,7 +60,7 @@ export default function CatalogForm({ mode, item }: Props) {
               }}
               aria-invalid={Boolean(fieldErrors.title)}
             />
-            {fieldErrors.title ? <InlineError>{fieldErrors.title}</InlineError> : null}
+            {fieldErrors.title ? <p className="text-sm text-red-400">{fieldErrors.title}</p> : null}
           </div>
 
           <div className="space-y-2">
@@ -75,7 +74,7 @@ export default function CatalogForm({ mode, item }: Props) {
               rows={5}
               aria-invalid={Boolean(fieldErrors.description)}
             />
-            {fieldErrors.description ? <InlineError>{fieldErrors.description}</InlineError> : null}
+            {fieldErrors.description ? <p className="text-sm text-red-400">{fieldErrors.description}</p> : null}
           </div>
 
           <div className="space-y-2">
@@ -89,10 +88,10 @@ export default function CatalogForm({ mode, item }: Props) {
               placeholder="manga, fantasy"
               aria-invalid={Boolean(fieldErrors.tagsText)}
             />
-            {fieldErrors.tagsText ? <InlineError>{fieldErrors.tagsText}</InlineError> : null}
+            {fieldErrors.tagsText ? <p className="text-sm text-red-400">{fieldErrors.tagsText}</p> : null}
           </div>
 
-          {formError ? <InlineError>{formError}</InlineError> : null}
+          {formError ? <p className="text-sm text-red-400">{formError}</p> : null}
 
           <div className="flex flex-wrap gap-2 pt-2">
             <Button type="submit" disabled={pending}>

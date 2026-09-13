@@ -37,10 +37,10 @@ if (!idParsed.success) {
 {
   notFound ? (
     <Layout title="Shelf — Not found">
-      <main class="shelf-page">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Catalog item not found</h1>
-          <a href="/admin/catalog" class="text-primary hover:text-foreground mt-4 inline-block text-sm underline">
+          <a href="/admin/catalog" class="mt-4 inline-block text-sm text-zinc-200 underline hover:text-white">
             Back to list
           </a>
         </div>
@@ -48,7 +48,7 @@ if (!idParsed.success) {
     </Layout>
   ) : configError ? (
     <Layout title="Shelf — Configuration error">
-      <main class="shelf-page">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Supabase is not configured</h1>
         </div>
@@ -56,7 +56,7 @@ if (!idParsed.success) {
     </Layout>
   ) : item ? (
     <Layout title={`Shelf — Edit: ${item.title}`}>
-      <main class="shelf-page">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
         <CatalogForm client:load mode="edit" item={item} />
       </main>
     </Layout>

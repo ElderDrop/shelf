@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { InlineError, LoadingLabel } from "@/components/InlineFeedback";
 
 interface ShareStatus {
   active: boolean;
@@ -170,16 +169,16 @@ export default function ShareLinkControls() {
   const primaryLabel = active ? "Regenerate link" : "Generate link";
 
   return (
-    <section className="shelf-panel mt-6">
-      <h2 className="text-foreground text-sm font-medium">Share library & wishlist</h2>
-      <p className="text-muted-foreground mt-1 text-sm">
+    <section className="mt-6 rounded-md border border-zinc-800 bg-zinc-900/40 p-4">
+      <h2 className="text-sm font-medium text-zinc-200">Share library & wishlist</h2>
+      <p className="mt-1 text-sm text-zinc-400">
         Anyone with the link can view both lists read-only. Revoke anytime to invalidate it.
       </p>
 
-      {!statusLoaded && !error ? <LoadingLabel className="mt-3">Loading…</LoadingLabel> : null}
+      {!statusLoaded && !error ? <p className="mt-3 text-sm text-zinc-500">Loading…</p> : null}
 
       {active ? (
-        <p className="text-foreground/80 mt-3 text-sm">
+        <p className="mt-3 text-sm text-zinc-300">
           Share link is active
           {createdAt ? (
             <>
@@ -191,9 +190,7 @@ export default function ShareLinkControls() {
         </p>
       ) : null}
 
-      {statusLoaded && status && !active ? (
-        <p className="text-muted-foreground mt-3 text-sm">No active share link.</p>
-      ) : null}
+      {statusLoaded && status && !active ? <p className="mt-3 text-sm text-zinc-400">No active share link.</p> : null}
 
       {url ? (
         <div className="mt-3 space-y-2">
@@ -204,16 +201,16 @@ export default function ShareLinkControls() {
               value={url}
               onFocus={selectUrlField}
               onClick={selectUrlField}
-              className="min-w-0 flex-1 cursor-text font-mono text-xs select-text"
+              className="min-w-0 flex-1 cursor-text font-mono text-xs text-zinc-200 select-text"
               aria-label="Share URL"
             />
             <Button type="button" variant="outline" size="sm" disabled={loading} onClick={() => void copy()}>
               {copied ? "Copied" : "Copy"}
             </Button>
           </div>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-zinc-500">
             Click the URL to select it, then copy. Or open{" "}
-            <a href={url} className="text-primary hover:text-foreground underline" target="_blank" rel="noreferrer">
+            <a href={url} className="text-zinc-300 underline hover:text-white" target="_blank" rel="noreferrer">
               the share page
             </a>
             .
@@ -222,7 +219,7 @@ export default function ShareLinkControls() {
       ) : null}
 
       {active && !url ? (
-        <p className="text-muted-foreground mt-2 text-xs">Regenerate to reveal a new URL you can copy.</p>
+        <p className="mt-2 text-xs text-zinc-500">Regenerate to reveal a new URL you can copy.</p>
       ) : null}
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -236,8 +233,8 @@ export default function ShareLinkControls() {
         ) : null}
       </div>
 
-      {hint ? <p className="text-foreground/80 mt-3 text-sm">{hint}</p> : null}
-      {error ? <InlineError className="mt-3">{error}</InlineError> : null}
+      {hint ? <p className="mt-3 text-sm text-zinc-300">{hint}</p> : null}
+      {error ? <p className="mt-3 text-sm text-red-400">{error}</p> : null}
     </section>
   );
 }

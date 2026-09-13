@@ -1,7 +1,5 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import EmptyState from "@/components/EmptyState.astro";
-import MediaItemRow from "@/components/collection/MediaItemRow.astro";
 import { shareTokenSchema } from "@/lib/schemas/share";
 import { resolveShareByToken } from "@/lib/services/share";
 import type { ShareAssignmentItem } from "@/lib/services/share";
@@ -33,34 +31,37 @@ if (failed) {
 {
   failed ? (
     <Layout title="Shelf — Share link unavailable">
-      <main class="shelf-page">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Share link unavailable</h1>
-          <p class="text-muted-foreground mt-1 text-sm">This share link is invalid or has been revoked.</p>
+          <p class="mt-1 text-sm text-zinc-400">This share link is invalid or has been revoked.</p>
         </div>
       </main>
     </Layout>
   ) : (
     <Layout title="Shelf — Shared collection">
-      <main class="shelf-page">
+      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Shared collection</h1>
-          <p class="text-muted-foreground mt-1 text-sm">Read-only view of library and wishlist.</p>
+          <p class="mt-1 text-sm text-zinc-400">Read-only view of library and wishlist.</p>
 
           <section class="mt-10">
-            <h2 class="text-foreground text-lg font-medium">Library</h2>
+            <h2 class="text-lg font-medium text-zinc-50">Library</h2>
             {library.length === 0 ? (
-              <EmptyState class="mt-2">No library items.</EmptyState>
+              <p class="mt-2 text-sm text-zinc-400">No library items.</p>
             ) : (
               <ul class="mt-4 space-y-6">
                 {library.map((row) => (
-                  <li class="border-border border-b pb-6 last:border-b-0">
-                    <MediaItemRow
-                      title={row.catalog_item.title}
-                      description={row.catalog_item.description}
-                      tags={row.catalog_item.tags}
-                      titleAs="h3"
-                    />
+                  <li class="border-b border-zinc-800 pb-6 last:border-b-0">
+                    <h3 class="text-base font-medium text-zinc-50">{row.catalog_item.title}</h3>
+                    {row.catalog_item.description ? (
+                      <p class="mt-2 text-sm leading-relaxed text-zinc-300">{row.catalog_item.description}</p>
+                    ) : null}
+                    {row.catalog_item.tags.length > 0 ? (
+                      <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">
+                        {row.catalog_item.tags.join(" · ")}
+                      </p>
+                    ) : null}
                   </li>
                 ))}
               </ul>
@@ -68,19 +69,22 @@ if (failed) {
           </section>
 
           <section class="mt-10">
-            <h2 class="text-foreground text-lg font-medium">Wishlist</h2>
+            <h2 class="text-lg font-medium text-zinc-50">Wishlist</h2>
             {wishlist.length === 0 ? (
-              <EmptyState class="mt-2">No wishlist items.</EmptyState>
+              <p class="mt-2 text-sm text-zinc-400">No wishlist items.</p>
             ) : (
               <ul class="mt-4 space-y-6">
                 {wishlist.map((row) => (
-                  <li class="border-border border-b pb-6 last:border-b-0">
-                    <MediaItemRow
-                      title={row.catalog_item.title}
-                      description={row.catalog_item.description}
-                      tags={row.catalog_item.tags}
-                      titleAs="h3"
-                    />
+                  <li class="border-b border-zinc-800 pb-6 last:border-b-0">
+                    <h3 class="text-base font-medium text-zinc-50">{row.catalog_item.title}</h3>
+                    {row.catalog_item.description ? (
+                      <p class="mt-2 text-sm leading-relaxed text-zinc-300">{row.catalog_item.description}</p>
+                    ) : null}
+                    {row.catalog_item.tags.length > 0 ? (
+                      <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">
+                        {row.catalog_item.tags.join(" · ")}
+                      </p>
+                    ) : null}
                   </li>
                 ))}
               </ul>

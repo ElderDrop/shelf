@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { InlineError, LoadingLabel, EmptyCopy } from "@/components/InlineFeedback";
 import type { ApiErrorBody } from "@/lib/api-response";
 
 type FilterValue = "all" | CatalogStatus;
@@ -74,11 +75,11 @@ export default function CatalogList({ initialItems }: Props) {
   }
 
   return (
-    <Card className="border-zinc-800 bg-zinc-950 text-zinc-100">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
         <CardTitle className="text-xl">Catalog</CardTitle>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-sm text-zinc-400">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <span id="catalog-status-filter-label">Status</span>
             <Select
               value={filter}
@@ -87,14 +88,10 @@ export default function CatalogList({ initialItems }: Props) {
                 onFilterChange(value as FilterValue);
               }}
             >
-              <SelectTrigger
-                aria-labelledby="catalog-status-filter-label"
-                className="w-[140px] border-zinc-700 bg-zinc-900 text-zinc-100"
-                size="sm"
-              >
+              <SelectTrigger aria-labelledby="catalog-status-filter-label" className="w-[140px]" size="sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="border-zinc-700 bg-zinc-900 text-zinc-100">
+              <SelectContent>
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="approved">Approved</SelectItem>
@@ -108,27 +105,28 @@ export default function CatalogList({ initialItems }: Props) {
         </div>
       </CardHeader>
       <CardContent>
-        {error ? <p className="mb-4 text-sm text-red-400">{error}</p> : null}
+        {error ? <InlineError className="mb-4">{error}</InlineError> : null}
+        {actionsDisabled ? <LoadingLabel className="mb-4">Updating…</LoadingLabel> : null}
         {items.length === 0 ? (
-          <p className="text-sm text-zinc-400">No catalog items for this filter.</p>
+          <EmptyCopy>No catalog items for this filter.</EmptyCopy>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-zinc-800 hover:bg-transparent">
-                <TableHead className="text-zinc-400">Title</TableHead>
-                <TableHead className="text-zinc-400">Status</TableHead>
-                <TableHead className="text-zinc-400">Tags</TableHead>
-                <TableHead className="text-right text-zinc-400">Actions</TableHead>
+              <TableRow className="hover:bg-transparent">
+                <TableHead>Title</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Tags</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.map((item) => (
-                <TableRow key={item.id} className="border-zinc-800">
-                  <TableCell className="font-medium text-zinc-100">{item.title}</TableCell>
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{item.title}</TableCell>
                   <TableCell>
                     <Badge variant={statusBadgeVariant(item.status)}>{item.status}</Badge>
                   </TableCell>
-                  <TableCell className="max-w-xs truncate text-zinc-400">
+                  <TableCell className="text-muted-foreground max-w-xs truncate">
                     {item.tags.length > 0 ? item.tags.join(", ") : "—"}
                   </TableCell>
                   <TableCell className="space-x-2 text-right">

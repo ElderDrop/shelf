@@ -2,6 +2,8 @@
 import Layout from "@/layouts/Layout.astro";
 import CatalogItemActions from "@/components/catalog/CatalogItemActions";
 import CollectionItemActions from "@/components/collection/CollectionItemActions";
+import EmptyState from "@/components/EmptyState.astro";
+import MediaItemRow from "@/components/collection/MediaItemRow.astro";
 import ShareLinkControls from "@/components/share/ShareLinkControls";
 import { createClient } from "@/lib/supabase";
 import { listForUser } from "@/lib/services/assignments";
@@ -31,54 +33,55 @@ if (!supabase) {
 
 {
   configError ? (
-    <Layout title="Configuration error">
-      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-8 text-zinc-100">
-        <h1 class="text-xl font-semibold">Supabase is not configured</h1>
+    <Layout title="Shelf — Configuration error">
+      <main class="shelf-page">
+        <div class="mx-auto max-w-3xl">
+          <h1 class="text-2xl font-semibold tracking-tight">Supabase is not configured</h1>
+        </div>
       </main>
     </Layout>
   ) : (
-    <Layout title="Library">
-      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
+    <Layout title="Shelf — Library">
+      <main class="shelf-page">
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Library</h1>
-          <p class="mt-1 text-sm text-zinc-400">Items you own or have finished.</p>
+          <p class="text-muted-foreground mt-1 text-sm">Items you own or have finished.</p>
 
           <ShareLinkControls client:only="react" />
 
           {recommendationsUnavailable ? (
-            <section class="mt-8 rounded-md border border-zinc-800 bg-zinc-900/40 p-4">
-              <h2 class="text-sm font-medium text-zinc-200">Recommended for you</h2>
-              <p class="mt-2 text-sm text-zinc-400">Recommendations are temporarily unavailable.</p>
+            <section class="shelf-panel mt-8">
+              <h2 class="text-foreground text-sm font-medium">Recommended for you</h2>
+              <EmptyState class="mt-2">Recommendations are temporarily unavailable.</EmptyState>
             </section>
           ) : null}
 
           {recommendations && !recommendations.eligible ? (
-            <section class="mt-8 rounded-md border border-zinc-800 bg-zinc-900/40 p-4">
-              <h2 class="text-sm font-medium text-zinc-200">Recommended for you</h2>
-              <p class="mt-2 text-sm text-zinc-400">
+            <section class="shelf-panel mt-8">
+              <h2 class="text-foreground text-sm font-medium">Recommended for you</h2>
+              <EmptyState class="mt-2">
                 Recommendations unlock after you have at least 3 library items with tags. You have{" "}
                 {recommendations.taggedLibraryCount} tagged{" "}
                 {recommendations.taggedLibraryCount === 1 ? "item" : "items"} in your library.
-              </p>
+              </EmptyState>
             </section>
           ) : null}
 
           {recommendations?.eligible ? (
             <section class="mt-8">
-              <h2 class="text-lg font-medium text-zinc-50">Recommended for you</h2>
+              <h2 class="text-foreground text-lg font-medium">Recommended for you</h2>
               {recommendations.items.length === 0 ? (
-                <p class="mt-2 text-sm text-zinc-400">No recommendations match your library yet.</p>
+                <EmptyState class="mt-2">No recommendations match your library yet.</EmptyState>
               ) : (
                 <ul class="mt-4 space-y-6">
                   {recommendations.items.map(({ candidate }) => (
-                    <li class="border-b border-zinc-800 pb-6 last:border-b-0">
-                      <h3 class="text-base font-medium text-zinc-50">{candidate.title}</h3>
-                      {candidate.description ? (
-                        <p class="mt-2 text-sm leading-relaxed text-zinc-300">{candidate.description}</p>
-                      ) : null}
-                      {candidate.tags.length > 0 ? (
-                        <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">{candidate.tags.join(" · ")}</p>
-                      ) : null}
+                    <li class="border-border border-b pb-6 last:border-b-0">
+                      <MediaItemRow
+                        title={candidate.title}
+                        description={candidate.description}
+                        tags={candidate.tags}
+                        titleAs="h3"
+                      />
                       <CatalogItemActions client:only="react" catalogItemId={candidate.id} />
                     </li>
                   ))}
@@ -88,48 +91,32 @@ if (!supabase) {
           ) : null}
 
           {assignments.length === 0 ? (
-            <p class="mt-10 text-sm text-zinc-400">
+            <EmptyState>
               Your library is empty. Browse the{" "}
-              <a href="/catalog" class="text-zinc-200 underline hover:text-white">
+              <a href="/catalog" class="text-primary hover:text-foreground underline">
                 catalog
               </a>{" "}
               to add items.
-            </p>
+            </EmptyState>
           ) : (
             <ul class="mt-8 space-y-6">
               {assignments.map((assignment) => {
                 const item = assignment.catalog_item;
                 const unavailable = item == null;
                 return (
-                  <li class="border-b border-zinc-800 pb-6 last:border-b-0">
+                  <li class="border-border border-b pb-6 last:border-b-0">
                     {unavailable ? (
-                      <>
-                        <p class="text-sm text-zinc-400">This item is no longer available in the catalog.</p>
-                        <CollectionItemActions
-                          client:only="react"
-                          assignmentId={assignment.id}
-                          catalogItemId={assignment.catalog_item_id}
-                          listType="library"
-                          unavailable
-                        />
-                      </>
+                      <MediaItemRow unavailable />
                     ) : (
-                      <>
-                        <h2 class="text-lg font-medium text-zinc-50">{item.title}</h2>
-                        {item.description ? (
-                          <p class="mt-2 text-sm leading-relaxed text-zinc-300">{item.description}</p>
-                        ) : null}
-                        {item.tags.length > 0 ? (
-                          <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">{item.tags.join(" · ")}</p>
-                        ) : null}
-                        <CollectionItemActions
-                          client:only="react"
-                          assignmentId={assignment.id}
-                          catalogItemId={assignment.catalog_item_id}
-                          listType="library"
-                        />
-                      </>
+                      <MediaItemRow title={item.title} description={item.description} tags={item.tags} />
                     )}
+                    <CollectionItemActions
+                      client:only="react"
+                      assignmentId={assignment.id}
+                      catalogItemId={assignment.catalog_item_id}
+                      listType="library"
+                      unavailable={unavailable}
+                    />
                   </li>
                 );
               })}

@@ -1,6 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import CatalogItemActions from "@/components/catalog/CatalogItemActions";
+import EmptyState from "@/components/EmptyState.astro";
+import MediaItemRow from "@/components/collection/MediaItemRow.astro";
 import { createClient } from "@/lib/supabase";
 import { listApproved } from "@/lib/services/catalog";
 import { listAssignmentStateForCatalog } from "@/lib/services/assignments";
@@ -27,17 +29,19 @@ if (!supabase) {
 
 {
   configError ? (
-    <Layout title="Configuration error">
-      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-8 text-zinc-100">
-        <h1 class="text-xl font-semibold">Supabase is not configured</h1>
+    <Layout title="Shelf — Configuration error">
+      <main class="shelf-page">
+        <div class="mx-auto max-w-3xl">
+          <h1 class="text-2xl font-semibold tracking-tight">Supabase is not configured</h1>
+        </div>
       </main>
     </Layout>
   ) : (
-    <Layout title="Catalog">
-      <main class="min-h-[calc(100vh-3rem)] bg-zinc-950 p-4 text-zinc-100 sm:p-8">
+    <Layout title="Shelf — Catalog">
+      <main class="shelf-page">
         <div class="mx-auto max-w-3xl">
           <h1 class="text-2xl font-semibold tracking-tight">Catalog</h1>
-          <p class="mt-1 text-sm text-zinc-400">Approved titles you can browse from the shared catalog.</p>
+          <p class="text-muted-foreground mt-1 text-sm">Approved titles you can browse from the shared catalog.</p>
 
           <form method="GET" action="/catalog" class="mt-6 flex gap-2">
             <input
@@ -45,41 +49,39 @@ if (!supabase) {
               name="q"
               value={searchQuery}
               placeholder="Search by title, description, or tag…"
-              class="flex-1 rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-500 focus:outline-none"
+              class="border-input bg-card text-foreground placeholder:text-muted-foreground focus:border-ring flex-1 rounded-md border px-3 py-2 text-sm focus:outline-none"
             />
             <button
               type="submit"
-              class="rounded-md bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-200"
+              class="bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm font-medium hover:opacity-90"
             >
               Search
             </button>
           </form>
 
           {items.length === 0 ? (
-            <p class="mt-10 text-sm text-zinc-400">
+            <EmptyState>
               {hasSearch
                 ? "No approved items match your search. Try a different query or clear the search box."
                 : "No approved items are available yet. Check back after the catalog has been curated."}
-            </p>
+            </EmptyState>
           ) : (
             <ul class="mt-8 space-y-6">
               {items.map((item) => {
                 const assignment = assignmentState.get(item.id);
                 return (
-                  <li class="border-b border-zinc-800 pb-6 last:border-b-0">
-                    <h2 class="text-lg font-medium text-zinc-50">{item.title}</h2>
-                    {item.description ? (
-                      <p class="mt-2 text-sm leading-relaxed text-zinc-300">{item.description}</p>
-                    ) : null}
-                    {item.tags.length > 0 ? (
-                      <p class="mt-3 text-xs tracking-wide text-zinc-500 uppercase">{item.tags.join(" · ")}</p>
-                    ) : null}
-                    <CatalogItemActions
-                      client:only="react"
-                      catalogItemId={item.id}
-                      listType={assignment?.listType}
-                      assignmentId={assignment?.assignmentId}
-                    />
+                  <li class="border-border border-b pb-6 last:border-b-0">
+                    <MediaItemRow title={item.title} description={item.description} tags={item.tags} />
+                    {assignment ? (
+                      <CatalogItemActions
+                        client:only="react"
+                        catalogItemId={item.id}
+                        listType={assignment.listType}
+                        assignmentId={assignment.assignmentId}
+                      />
+                    ) : (
+                      <CatalogItemActions client:only="react" catalogItemId={item.id} />
+                    )}
                   </li>
                 );
               })}

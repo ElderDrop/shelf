@@ -34,7 +34,7 @@ Kolekcjoner mediów fizycznych nie ma jednego miejsca łączącego posiadane poz
 | S-02 | catalog-search-assign | search the approved catalog and assign items to library or wishlist; view library and wishlist with title, description, and tags | S-01 | US-01, FR-001, FR-002, FR-003 | done |
 | S-03 | admin-metadata-enrichment | admin can run automated metadata enrichment on a catalog item and review the result before approval | S-01 | FR-005 | out-of-scope |
 | S-04 | tag-recommendations | receive item recommendations based on tags or description of items in their library | S-02 | FR-007 | done |
-| S-05 | readonly-share-link | generate a read-only share link exposing library and wishlist without edit rights; recipient views without editing | S-02 | FR-008 | proposed |
+| S-05 | readonly-share-link | generate a read-only share link exposing library and wishlist without edit rights; recipient views without editing | S-02 | FR-008 | done |
 | S-06 | ui-polish | improve visual consistency and usability of admin and collector surfaces built in earlier slices | S-01 | — | proposed |
 
 ## Streams
@@ -137,7 +137,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Privacy guardrail (no edit via link) is the load-bearing constraint; parallel with recommendations to close the must-have path quickly under time pressure.
-- **Status:** proposed
+- **Status:** done
 
 ### S-06: UI polish
 
@@ -160,7 +160,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-02 | catalog-search-assign | Search approved catalog, assign to library/wishlist, view collections | no | After S-01 |
 | S-03 | admin-metadata-enrichment | Admin automated metadata enrichment with review | no | Out of scope for current MVP |
 | S-04 | tag-recommendations | Simple tag/description overlap recommendations | yes | After S-02; run `/10x-implement tag-recommendations` |
-| S-05 | readonly-share-link | Read-only share link for library and wishlist | no | After S-02 |
+| S-05 | readonly-share-link | Read-only share link for library and wishlist | no | Done — archived `context/archive/2026-09-06-readonly-share-link/` |
 | S-06 | ui-polish | Visual/UX polish for admin and collector surfaces | no | After S-01; prefer after more UI exists |
 
 ## Open Roadmap Questions
